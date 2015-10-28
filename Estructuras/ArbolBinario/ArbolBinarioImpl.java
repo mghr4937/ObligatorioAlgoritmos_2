@@ -47,6 +47,7 @@ public class ArbolBinarioImpl implements IArbolBinario {
 	@Override
 	public void mostrarPosOrder() {
 		mostrarPosOrder(this.raiz);
+		System.out.println();
 	}
 
 	@Override
@@ -131,14 +132,14 @@ public class ArbolBinarioImpl implements IArbolBinario {
 		if (this.esArbolVacio())
 			this.raiz = new NodoArbolBinario(dato);
 
-		else if (dato.toString().compareToIgnoreCase(nodo.getDato().toString()) < 0) { 
+		else if (dato.toString().compareToIgnoreCase(nodo.getDato().toString()) < 0) {
 			// n<dato=>insertaréensubárbolizq.
 			if (nodo.getIzq() == null) {
 				nuevo = new NodoArbolBinario(dato);
 				nodo.setIzq(nuevo);
 			} else
 				insertarElemento(dato, nodo.getIzq());
-		} else if (dato.toString().compareToIgnoreCase(nodo.getDato().toString()) > 0) { 
+		} else if (dato.toString().compareToIgnoreCase(nodo.getDato().toString()) > 0) {
 			// n>dato=>insertaréensubárbolderecho
 			if (nodo.getDer() == null) {
 				nuevo = new NodoArbolBinario(dato);
@@ -210,49 +211,66 @@ public class ArbolBinarioImpl implements IArbolBinario {
 
 	@Override
 	public void borrarElemento(NodoArbolBinario nodo) {
-		NodoArbolBinario aux = null;
+		eliminar(nodo);
+	}
 
-		if ((nodo.getIzq() == null) && (nodo.getDer() == null))
-			nodo = null;
-		else {
-			if (nodo.getIzq() != null && nodo.getDer() != null) {
-				if (nodo == raiz) {
-					aux = nodo.getIzq();
-					nodo = nodo.getDer();
-
-					while (nodo.getIzq() != null) {
-						nodo = nodo.getIzq();
-					}
-					nodo.setIzq(aux);
-				} else {
-					aux = nodo.getIzq();
-					nodo = nodo.getDer();
-
-					while (nodo.getIzq() != null) {
-						nodo = nodo.getIzq();
-					}
-					nodo.setIzq(aux);
-				}
+	public void eliminar(NodoArbolBinario nodo) {
+		if (this.raiz == null)
+			return;
+		if (this.raiz.getDato().equals(nodo.getDato())) {
+			if (this.raiz.getIzq() == null) {
+				this.raiz = this.raiz.getDer();
 			} else {
-				if (nodo == raiz) {
-					if (nodo.getIzq() != null) {
-						nodo = nodo.getIzq();
-					} else {
-						nodo = nodo.getDer();
-					}
+				if (this.raiz.getDer() == null) {
+					this.raiz = this.raiz.getIzq();
 				} else {
-					if (nodo.getIzq() != null) {
-						nodo = nodo.getIzq();
-					} else {
-						nodo = nodo.getDer();
-					}
+					ArbolBinarioImpl hDer = this.subDer();
+					this.raiz = this.raiz.getIzq();
+					NodoArbolBinario max = maximo();
+					max.setDer(hDer.raiz);
 				}
 			}
+		} else {
+			if (raiz.getDato().toString().compareTo(nodo.getDato().toString()) > 0) {
+				ArbolBinarioImpl hIzq = this.subIzq();
+				hIzq.eliminar(nodo);
+				this.raiz.setIzq(hIzq.getRaiz());
+			} else {
+				ArbolBinarioImpl hDer = this.subDer();
+				hDer.eliminar(nodo);
+				this.raiz.setDer(hDer.raiz);
+			}
 		}
-		System.out.println("El Arbol impreso no debe contener el elemento borrado:");
-		mostrarPosOrder();
-		System.out.println();
+	}
+
+	// Retorna el sub Arbol Derecho --> INCOMPLETO
+	private ArbolBinarioImpl subDer() {
+		ArbolBinarioImpl der = new ArbolBinarioImpl();
+		der.raiz = this.raiz.getDer();
+		
+		return der;
 	}
 	
-	
+	// Retorna el sub Arbol Izquierdo --> INCOMPLETO
+	private ArbolBinarioImpl subIzq() {
+		ArbolBinarioImpl izq = new ArbolBinarioImpl();
+		izq.raiz = this.raiz.getIzq();
+		
+		return izq;
+	}
+
+	private NodoArbolBinario maximo() {
+		if (this.raiz == null)
+			return null;
+		return maximo(this.raiz);
+	}
+
+	private NodoArbolBinario maximo(NodoArbolBinario nodo){
+		if(nodo.getDer() == null)
+			return nodo;
+		else
+			return maximo(nodo.getDer());
+	}
+   
+    
 }

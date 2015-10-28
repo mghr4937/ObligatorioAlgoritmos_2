@@ -1,6 +1,6 @@
 package Estructuras.Grafo.MatrizAdyacencia;
 
-import Estructuras.ListaOrdenada.IListaOrdenada;
+import Estructuras.ListaOrdenada.ILista;
 import Estructuras.ListaOrdenada.ListaOrdenada_impl;
 
 public class GrafoMatrizAdyacencia_impl implements IGrafo {
@@ -55,8 +55,8 @@ public class GrafoMatrizAdyacencia_impl implements IGrafo {
 	}
 
 	@Override
-	public IListaOrdenada verticesAdyacentes(int v) {
-		IListaOrdenada l = new ListaOrdenada_impl();
+	public ILista verticesAdyacentes(int v) {
+		ILista l = new ListaOrdenada_impl();
 		for (int i = 1; i <= this.cantNodos; i++) {
 			if (this.sonAdyacentes(v, i)) {
 				l.insertarOrdenado(i);

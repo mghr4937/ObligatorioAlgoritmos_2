@@ -11,7 +11,7 @@ public class Esquina {
 	public Esquina(Double x, Double y){
 		this.x = x;
 		this.y = y;
-		this.setMovil(null);
+		this.movil = null;
 	}
 	
 	@Override
@@ -50,10 +50,11 @@ public class Esquina {
 	}
 
 	public Movil getMovil() {
-		return movil;
+		// TODO Auto-generated method stub
+		return this.movil;
 	}
-
-	public void setMovil(Movil movil) {
+	
+	public void setMovil(Movil movil){
 		this.movil = movil;
 	}
 }

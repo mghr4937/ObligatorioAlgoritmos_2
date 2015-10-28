@@ -1,6 +1,6 @@
 package Estructuras.Grafo.MatrizAdyacencia;
 
-import Estructuras.ListaOrdenada.IListaOrdenada;
+import Estructuras.ListaOrdenada.ILista;
 
 public interface IGrafo {
 
@@ -25,7 +25,7 @@ public interface IGrafo {
 	// Pre: El vértice v existe en el grafo
 	// Post: Retorna una lista con los vértices adyacentes de v.
 	// Si v no tiene adyacentes retorna la lista vacía
-	public IListaOrdenada verticesAdyacentes(int v);
+	public ILista verticesAdyacentes(int v);
 
 	// Pre: a y b son vértices del grafo
 	// Post: Retorna true sii los vértices a y b son adyacentes.

@@ -14,13 +14,11 @@ public class Sistema implements ISistema {
 	private ArbolBinarioImpl arbolMoviles;
 	private ListaAdyacencia_impl listaTramos;
 	private ListaSimple_impl listaEsquinas;
-	//private GrafoMatrizAdyacencia_impl grafoEsquinas;
 
 	public Sistema() {
 		this.arbolMoviles = new ArbolBinarioImpl();
 		this.listaTramos = new ListaAdyacencia_impl();
 		this.listaEsquinas = new ListaSimple_impl();
-		//this.grafoEsquinas = new GrafoMatrizAdyacencia_impl(50);
 	}
 
 	public Retorno inicializarSistema(int cantPuntos) {
@@ -112,6 +110,7 @@ public class Sistema implements ISistema {
 				return new Retorno(Resultado.ERROR_2);
 			} else {
 				this.arbolMoviles.borrarElemento(nodoMovilBuscado);
+				this.arbolMoviles.mostrarPreOrder();
 				return new Retorno(Resultado.OK);
 			}
 		} else {
@@ -143,8 +142,6 @@ public class Sistema implements ISistema {
 			return new Retorno(Resultado.ERROR_3);
 		}	
 	}
-
-
 	@Override
 	public Retorno buscarMovil(String matricula) {
 		Object entidadFantasia = new Movil(matricula);
@@ -199,6 +196,16 @@ public class Sistema implements ISistema {
 		return new Retorno(Resultado.NO_IMPLEMENTADA);
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public int getiCantEsquinas() {
 		return iCantEsquinas;
 	}

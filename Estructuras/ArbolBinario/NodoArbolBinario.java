@@ -6,6 +6,8 @@ public class NodoArbolBinario {
 	private NodoArbolBinario der;
 	private NodoArbolBinario izq;
 
+	public NodoArbolBinario(){}
+	
 	public NodoArbolBinario(Object o) {
 		dato = o;
 		izq = null;
@@ -41,5 +43,9 @@ public class NodoArbolBinario {
 	public void setIzq(NodoArbolBinario nodoI) {
 		izq = nodoI;
 	}
-
+	
+	@Override
+	public String toString() {
+		return (String) this.getDato();
+	}
 }

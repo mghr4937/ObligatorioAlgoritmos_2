@@ -3,7 +3,7 @@ package Estructuras.ListaOrdenada;
 import java.util.Comparator;
 import java.util.Iterator;
 
-public class ListaOrdenada_impl implements IListaOrdenada {
+public class ListaOrdenada_impl implements ILista {
 
     private Nodo_ListaOrdenada inicio;
     @SuppressWarnings("unused")

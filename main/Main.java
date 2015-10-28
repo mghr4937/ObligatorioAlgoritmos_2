@@ -7,25 +7,30 @@ public class Main {
 	public static void main(String[] args) {
 
 		Sistema sistema = new Sistema();
-
+		
 		// INSERTAR MOVIL
-		sistema.registrarMovil("MAE 2873", "Conductor_Uno");
-		sistema.registrarMovil("ABC 1234", "Conductor_Dos");
+		sistema.registrarMovil("ABC 0002", "Conductor_Dos");
+		sistema.registrarMovil("ABC 0001", "Conductor_Uno");
+		sistema.registrarMovil("ABC 0003", "Conductor_Tres");
 
 		// DESHABILITAR MOVIL
-		sistema.deshabilitarMovil("MAE 2873");
-		sistema.deshabilitarMovil("ABC 1234");
+		sistema.deshabilitarMovil("ABC 0002");
+		sistema.deshabilitarMovil("ABC 0003");
+		sistema.deshabilitarMovil("ABC 0001");
 
 		// HABILITAR MOVIL
-		sistema.habilitarMovil("MAE 2873");
-		sistema.habilitarMovil("ABC 1234");
+		sistema.habilitarMovil("ABC 0001");
+		sistema.habilitarMovil("ABC 0003");
+		sistema.habilitarMovil("ABC 0002");
 		
 		// BUSCAR MOVIL
-		sistema.buscarMovil("MAE 2873");
-		sistema.buscarMovil("ABC 1234");
+		sistema.buscarMovil("ABC 0003");
+		sistema.buscarMovil("ABC 0001");
+		sistema.buscarMovil("ABC 0002");
 
 		// ELIMINAR MOVIL
-		sistema.eliminarMovil("MAE 2873");
-		sistema.eliminarMovil("ABC 1234");
+		sistema.eliminarMovil("ABC 0002");
+		sistema.eliminarMovil("ABC 0001");
+		sistema.eliminarMovil("ABC 0003");
 	}
 }

@@ -2,10 +2,9 @@ package Estructuras.ListaSimple;
 
 import java.util.Iterator;
 
-import Estructuras.ListaSimple.IListaSimple;
 
 
-public class ListaSimple_impl implements IListaSimple /*extends MetodosComunes*/{
+public class ListaSimple_impl implements ILista {
 
     
     private NodoLista inicio;
@@ -165,7 +164,6 @@ public class ListaSimple_impl implements IListaSimple /*extends MetodosComunes*/
     }
    
     
-	
 	@Override
     public Iterator iterator() {
         return new IteratorNodoListas(inicio);
@@ -178,22 +176,26 @@ public class ListaSimple_impl implements IListaSimple /*extends MetodosComunes*/
 		else
 			return false;
 	}
-
-	public boolean pertenece(Object elemento) {
+	
+	 //Precondicion: No existen precondiciones
+    //Postcondicion: Retorna TRUE si el dato pasado como parametro pertenece a la lista
+    public boolean pertenece(Object elemento) {
         return perteneceAuxiliar(elemento, inicio);
     }
 
-    public boolean perteneceAuxiliar(Object elemento, NodoLista nodo) {
-        if (nodo == null) {
+    private boolean perteneceAuxiliar(Object elemento, NodoLista inicio2) {
+        if (inicio2 == null) {
             return false;
         } else {
-            if (nodo.getDato().equals(elemento)) {
+            if (inicio2.getDato().equals(elemento)) {
                 return true;
             } else {
-                return perteneceAuxiliar(elemento, nodo.getSiguiente());
+                return perteneceAuxiliar(elemento, inicio2.getSiguiente());
             }
         }
     }
+	
+
     
 
 }
