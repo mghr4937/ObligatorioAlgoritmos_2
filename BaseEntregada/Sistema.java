@@ -158,7 +158,15 @@ public class Sistema implements ISistema {
 
 	@Override
 	public Retorno informeMoviles() {
-		return new Retorno(Resultado.NO_IMPLEMENTADA);
+		String str = "";
+		String aux = "";
+		Retorno retorno = new Retorno(Resultado.OK);
+		if(!this.arbolMoviles.esArbolVacio()){
+			str = this.arbolMoviles.mostrarInOrder(aux);
+		}
+		System.out.println(str);
+		retorno.valorString = str;
+		return retorno;
 	}
 
 	@Override

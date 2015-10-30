@@ -1,14 +1,18 @@
 package Dominio;
 
+
 public class Esquina {
 
+	private int esquinaId;
 	private Double x;
 	private Double y;
 	private Movil movil;
+	private static int numeradora = 0;
 	
 	public Esquina(){}
 	
 	public Esquina(Double x, Double y){
+		this.NumerarEsquina();
 		this.x = x;
 		this.y = y;
 		this.movil = null;
@@ -56,5 +60,25 @@ public class Esquina {
 	
 	public void setMovil(Movil movil){
 		this.movil = movil;
+	}
+
+	public int getEsquinaId() {
+		return esquinaId;
+	}
+
+	public void setEsquinaId(int esquinaId) {
+		this.esquinaId = esquinaId;
+	}
+
+	public static int getNumeradora() {
+		return numeradora;
+	}
+
+	public static void setNumeradora(int numeradora) {
+		Esquina.numeradora = numeradora;
+	}
+	
+	private void NumerarEsquina() {
+		this.esquinaId = ++Esquina.numeradora;
 	}
 }

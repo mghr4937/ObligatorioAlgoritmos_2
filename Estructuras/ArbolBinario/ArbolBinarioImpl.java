@@ -34,6 +34,11 @@ public class ArbolBinarioImpl implements IArbolBinario {
 	public void mostrarInOrder() {
 		mostrarInOrder(this.raiz);
 	}
+	
+	@Override
+	public String mostrarInOrder(String str){
+		return mostrarInOrder(this.raiz, str);
+	}
 
 	@Override
 	public void mostrarInOrder(NodoArbolBinario nodo) {
@@ -42,6 +47,16 @@ public class ArbolBinarioImpl implements IArbolBinario {
 			System.out.print(nodo.getDato() + "  ");
 			mostrarInOrder(nodo.getDer());
 		}
+	}
+	
+	@Override
+	public String mostrarInOrder(NodoArbolBinario nodo, String str) {
+		if (nodo != null) {
+			str =  mostrarInOrder(nodo.getIzq(), str);
+			str = str +("| " +nodo.getDato() + " ");
+			str =  mostrarInOrder(nodo.getDer(), str);
+		}
+		return str;
 	}
 
 	@Override

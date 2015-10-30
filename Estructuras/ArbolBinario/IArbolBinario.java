@@ -9,8 +9,12 @@ public interface IArbolBinario {
 	void mostrarPreOrder(NodoArbolBinario nodo);
 
 	void mostrarInOrder();
+	
+	String mostrarInOrder(String str);
 
 	void mostrarInOrder(NodoArbolBinario nodo);
+	
+	public String mostrarInOrder(NodoArbolBinario nodo, String str);
 
 	void mostrarPosOrder();
 

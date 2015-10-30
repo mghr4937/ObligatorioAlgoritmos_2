@@ -41,7 +41,7 @@ public class Movil implements Comparable<Movil> {
 
 	@Override
 	public String toString() {
-		return this.getMatricula() + ";" + this.getConductor() + ";" + this.getEstadoMovil() + ";" + this.getEsquinaActual();
+		return this.getMatricula() + ";" + this.getConductor() + ";" + this.getEstadoMovil();
 	}
 
 	@Override

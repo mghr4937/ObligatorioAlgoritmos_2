@@ -14,23 +14,25 @@ public class Main {
 		sistema.registrarMovil("ABC 0003", "Conductor_Tres");
 
 		// DESHABILITAR MOVIL
-		sistema.deshabilitarMovil("ABC 0002");
-		sistema.deshabilitarMovil("ABC 0003");
-		sistema.deshabilitarMovil("ABC 0001");
+		//sistema.deshabilitarMovil("ABC 0002");
+		//sistema.deshabilitarMovil("ABC 0003");
+		//sistema.deshabilitarMovil("ABC 0001");
 
 		// HABILITAR MOVIL
-		sistema.habilitarMovil("ABC 0001");
-		sistema.habilitarMovil("ABC 0003");
-		sistema.habilitarMovil("ABC 0002");
+		//sistema.habilitarMovil("ABC 0001");
+		//sistema.habilitarMovil("ABC 0003");
+		//sistema.habilitarMovil("ABC 0002");
 		
 		// BUSCAR MOVIL
-		sistema.buscarMovil("ABC 0003");
-		sistema.buscarMovil("ABC 0001");
-		sistema.buscarMovil("ABC 0002");
+		//sistema.buscarMovil("ABC 0003");
+		//sistema.buscarMovil("ABC 0001");
+		//sistema.buscarMovil("ABC 0002");
 
 		// ELIMINAR MOVIL
-		sistema.eliminarMovil("ABC 0002");
-		sistema.eliminarMovil("ABC 0001");
-		sistema.eliminarMovil("ABC 0003");
+		//sistema.eliminarMovil("ABC 0002");
+		//sistema.eliminarMovil("ABC 0001");
+		//sistema.eliminarMovil("ABC 0003");
+		
+		sistema.informeMoviles();
 	}
 }
