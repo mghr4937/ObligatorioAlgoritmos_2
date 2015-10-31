@@ -33,6 +33,6 @@ public class Main {
 		//sistema.eliminarMovil("ABC 0001");
 		//sistema.eliminarMovil("ABC 0003");
 		
-		sistema.informeMoviles();
+		
 	}
 }

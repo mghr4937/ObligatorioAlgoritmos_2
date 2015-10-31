@@ -5,19 +5,18 @@ import Dominio.*;
 import Dominio.Movil.EstadoMovil;
 import Estructuras.ArbolBinario.ArbolBinarioImpl;
 import Estructuras.ArbolBinario.NodoArbolBinario;
-import Estructuras.Grafo.ListaAdyacencia.ListaAdyacencia_impl;
 import Estructuras.ListaSimple.ListaSimple_impl;
 
 public class Sistema implements ISistema {
 
 	private int iCantEsquinas;
 	private ArbolBinarioImpl arbolMoviles;
-	private ListaAdyacencia_impl listaTramos;
+	private ListaSimple_impl listaTramos;
 	private ListaSimple_impl listaEsquinas;
 
 	public Sistema() {
 		this.arbolMoviles = new ArbolBinarioImpl();
-		this.listaTramos = new ListaAdyacencia_impl();
+		this.listaTramos = new ListaSimple_impl();
 		this.listaEsquinas = new ListaSimple_impl();
 	}
 
@@ -171,12 +170,45 @@ public class Sistema implements ISistema {
 
 	@Override
 	public Retorno registrarEsquina(Double coordX, Double coordY) {
-		return new Retorno(Resultado.NO_IMPLEMENTADA);
+		if(this.getiCantEsquinas() < this.listaEsquinas.largo()){
+			Esquina esquina = new Esquina(coordX, coordY);
+			if(this.listaEsquinas.buscar(esquina) == null){
+				this.listaEsquinas.insertarAlPrincipio(esquina);
+				System.out.println(esquina.toString());
+				return new Retorno(Resultado.OK);
+			}else{
+				System.out.println("Error 2 - Ya existen esas coordenadas");
+				return new Retorno(Resultado.ERROR_2);
+			}			
+		}else{
+			System.out.println("Error 1 - Ya hay registrdas"+ this.getiCantEsquinas() + "esquinas");
+			return new Retorno(Resultado.ERROR_1);
+		}			
 	}
 
 	@Override
 	public Retorno registrarTramo(Double coordXi, Double coordYi, Double coordXf, Double coordYf, int metros) {
-		return new Retorno(Resultado.NO_IMPLEMENTADA);
+		if(metros > 0){
+			Esquina inicio = new Esquina(coordXi,coordYi);
+			Esquina fin = new Esquina(coordXf,coordYf);
+			if(inicio != null && fin != null){
+				Tramo tramo = new Tramo(inicio, fin, metros);
+				if(!this.listaTramos.pertenece(tramo)){
+					this.listaTramos.insertarAlPrincipio(tramo);
+					System.out.println(tramo.toString());
+					return new Retorno(Resultado.OK);
+				}else{
+					System.out.println("Error 3 - Tramo ya existe en es sistema.");
+					return new Retorno(Resultado.ERROR_3);
+				}
+			}else{
+				System.out.println("Error 2 - Error en coordenadas");
+				return new Retorno(Resultado.ERROR_2);
+			}
+		}else{
+			System.out.println("Error 1 - Metros menor o igual a 0");
+			return new Retorno(Resultado.ERROR_1);
+		}
 	}
 
 	@Override
@@ -230,11 +262,11 @@ public class Sistema implements ISistema {
 		this.arbolMoviles = arbolMoviles;
 	}
 
-	public ListaAdyacencia_impl getListaTramos() {
+	public ListaSimple_impl getListaTramos() {
 		return listaTramos;
 	}
 
-	public void setListaTramos(ListaAdyacencia_impl listaTramos) {
+	public void setListaTramos(ListaSimple_impl listaTramos) {
 		this.listaTramos = listaTramos;
 	}
 }

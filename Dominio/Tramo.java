@@ -3,10 +3,12 @@ package Dominio;
 import Dominio.Esquina;;
 
 public class Tramo {
-
+	
+	private int iTramoId;
 	private Esquina esquinaOrigen;
 	private Esquina esquinaDestino;
 	private int metros;
+	private static int numerador = 0;
 
 	public Tramo() {}
 
@@ -14,6 +16,7 @@ public class Tramo {
 		this.esquinaOrigen = origen;
 		this.esquinaDestino = destino;
 		this.metros = metros;
+		this.NumerarTramo();
 	}
 	
 	@Override
@@ -63,6 +66,26 @@ public class Tramo {
 
 	public void setMetros(int metros) {
 		this.metros = metros;
+	}
+
+	public int getiTramoId() {
+		return iTramoId;
+	}
+
+	public void setiTramoId(int iTramoId) {
+		this.iTramoId = iTramoId;
+	}
+
+	public static int getNumerador() {
+		return numerador;
+	}
+
+	public static void setNumerador(int numerador) {
+		Tramo.numerador = numerador;
+	}
+	
+	private void NumerarTramo() {
+		this.iTramoId = ++Tramo.numerador;
 	}
 
 }

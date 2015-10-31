@@ -3,7 +3,7 @@ package Dominio;
 
 public class Esquina {
 
-	private int esquinaId;
+	private int iEsquinaId;
 	private Double x;
 	private Double y;
 	private Movil movil;
@@ -63,11 +63,11 @@ public class Esquina {
 	}
 
 	public int getEsquinaId() {
-		return esquinaId;
+		return iEsquinaId;
 	}
 
 	public void setEsquinaId(int esquinaId) {
-		this.esquinaId = esquinaId;
+		this.iEsquinaId = esquinaId;
 	}
 
 	public static int getNumeradora() {
@@ -79,6 +79,6 @@ public class Esquina {
 	}
 	
 	private void NumerarEsquina() {
-		this.esquinaId = ++Esquina.numeradora;
+		this.iEsquinaId = ++Esquina.numeradora;
 	}
 }
