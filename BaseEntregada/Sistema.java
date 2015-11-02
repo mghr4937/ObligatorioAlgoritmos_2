@@ -6,6 +6,7 @@ import Dominio.Movil.EstadoMovil;
 import Estructuras.ArbolBinario.ArbolBinarioImpl;
 import Estructuras.ArbolBinario.NodoArbolBinario;
 import Estructuras.ListaSimple.ListaSimple_impl;
+import Estructuras.ListaSimple.NodoLista;
 
 public class Sistema implements ISistema {
 
@@ -213,12 +214,56 @@ public class Sistema implements ISistema {
 
 	@Override
 	public Retorno eliminarEsquina(Double coordX, Double coordY) {
-		return new Retorno(Resultado.NO_IMPLEMENTADA);
+		Esquina esquina = new Esquina(coordX ,coordY);
+		esquina = (Esquina)this.listaEsquinas.buscar(esquina);
+		if(esquina != null){
+			ListaSimple_impl tramos = this.buscarTramosConEsquina(esquina);
+			NodoLista nodo = (NodoLista)tramos.ObtenerElementoPrimero();
+			while(nodo != null){
+				Tramo tramo = (Tramo) nodo.getDato();
+				if(tramo != null){
+					this.listaTramos.borrarElemento(tramo);
+				}
+				nodo = nodo.getSiguiente();
+			}
+			this.listaEsquinas.borrarElemento(esquina);
+			return new Retorno(Resultado.OK);
+		}else{
+			System.out.println("Error 1 - No existe esquina en el sistema");
+			return new Retorno(Resultado.ERROR_1);
+		}		
+	}
+	
+	private ListaSimple_impl buscarTramosConEsquina(Esquina esquina){
+		ListaSimple_impl retorno = new ListaSimple_impl();
+		NodoLista nodo =(NodoLista) this.listaTramos.ObtenerElementoPrimero();
+		while(nodo != null){
+			Tramo tramo = (Tramo)nodo.getDato();
+			if (tramo.getEsquinaOrigen().equals(esquina) || tramo.getEsquinaDestino().equals(esquina)){
+				retorno.insertarAlPrincipio(tramo);
+			}
+			nodo = nodo.getSiguiente();
+		}
+		return retorno;
 	}
 
 	@Override
 	public Retorno eliminarTramo(Double coordXi, Double coordYi, Double coordXf, Double coordYf) {
-		return new Retorno(Resultado.NO_IMPLEMENTADA);
+		Esquina inicio = (Esquina) this.listaEsquinas.buscar(new Esquina(coordXi, coordYi));
+		Esquina fin = (Esquina) this.listaEsquinas.buscar(new Esquina(coordXf, coordYf));
+		if(inicio != null && fin != null){
+			Tramo tramo = (Tramo) this.listaTramos.buscar(new Tramo(inicio, fin));
+			if(tramo != null){
+				this.listaTramos.borrarElemento(tramo);
+				return new Retorno(Resultado.OK);
+			}else{
+				System.out.println("Error 2 - No existe Tramo en el sistema");
+				return new Retorno(Resultado.ERROR_2);
+			}				
+		}else{
+			System.out.println("Error 1 - No existe esquina en el sistema");
+			return new Retorno(Resultado.ERROR_1);
+		}
 	}
 
 	@Override

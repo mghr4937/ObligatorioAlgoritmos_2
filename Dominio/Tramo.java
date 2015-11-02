@@ -11,6 +11,11 @@ public class Tramo {
 	private static int numerador = 0;
 
 	public Tramo() {}
+	
+	public Tramo (Esquina origen, Esquina destino){
+		this.esquinaOrigen = origen;
+		this.esquinaDestino = destino;
+	}
 
 	public Tramo(Esquina origen, Esquina destino, int metros) {
 		this.esquinaOrigen = origen;
