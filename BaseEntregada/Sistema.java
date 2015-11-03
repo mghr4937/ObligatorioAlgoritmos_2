@@ -191,7 +191,9 @@ public class Sistema implements ISistema {
 	public Retorno registrarTramo(Double coordXi, Double coordYi, Double coordXf, Double coordYf, int metros) {
 		if(metros > 0){
 			Esquina inicio = new Esquina(coordXi,coordYi);
+			inicio = (Esquina)this.listaEsquinas.buscar(inicio);
 			Esquina fin = new Esquina(coordXf,coordYf);
+			fin = (Esquina)this.listaEsquinas.buscar(fin);
 			if(inicio != null && fin != null){
 				Tramo tramo = new Tramo(inicio, fin, metros);
 				if(!this.listaTramos.pertenece(tramo)){
