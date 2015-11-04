@@ -2,13 +2,9 @@ package Estructuras.ListaSimple;
 
 import java.util.Iterator;
 
-
-
 public class ListaSimple_impl implements ILista {
 
-    
     private NodoLista inicio;
-  
     
     public ListaSimple_impl() {
         this.inicio = null;
@@ -164,6 +160,7 @@ public class ListaSimple_impl implements ILista {
     }
    
     
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
     public Iterator iterator() {
         return new IteratorNodoListas(inicio);

@@ -1,12 +1,23 @@
 package BaseEntregada;
 
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import BaseEntregada.Retorno.Resultado;
 import Dominio.*;
 import Dominio.Movil.EstadoMovil;
+import Dominio.EntidadesAuxiliares.EntidadRetornable_Movil_Radio;
 import Estructuras.ArbolBinario.ArbolBinarioImpl;
 import Estructuras.ArbolBinario.NodoArbolBinario;
+import Estructuras.Grafo.MatrizAdyacencia.GrafoMatrizAdyacencia_impl;
+import Estructuras.Hash.Hash;
+import Estructuras.ListaOrdenada.ListaOrdenada_impl;
+import Estructuras.ListaOrdenada.Nodo_ListaOrdenada;
 import Estructuras.ListaSimple.ListaSimple_impl;
 import Estructuras.ListaSimple.NodoLista;
+import Providers.provider;
 
 public class Sistema implements ISistema {
 
@@ -14,6 +25,11 @@ public class Sistema implements ISistema {
 	private ArbolBinarioImpl arbolMoviles;
 	private ListaSimple_impl listaTramos;
 	private ListaSimple_impl listaEsquinas;
+	private Hash puntosGrafo;
+	private GrafoMatrizAdyacencia_impl grafoMatrizAdy = new GrafoMatrizAdyacencia_impl(listaEsquinas.largo());
+
+
+	private provider provider = new provider();
 
 	public Sistema() {
 		this.arbolMoviles = new ArbolBinarioImpl();
@@ -182,7 +198,7 @@ public class Sistema implements ISistema {
 				return new Retorno(Resultado.ERROR_2);
 			}			
 		}else{
-			System.out.println("Error 1 - Ya hay registrdas"+ this.getiCantEsquinas() + "esquinas");
+			System.out.println("Error 1 - Ya hay registrdas "+ this.getiCantEsquinas() + " esquinas");
 			return new Retorno(Resultado.ERROR_1);
 		}			
 	}
@@ -213,13 +229,13 @@ public class Sistema implements ISistema {
 			return new Retorno(Resultado.ERROR_1);
 		}
 	}
-
+	
 	@Override
 	public Retorno eliminarEsquina(Double coordX, Double coordY) {
 		Esquina esquina = new Esquina(coordX ,coordY);
 		esquina = (Esquina)this.listaEsquinas.buscar(esquina);
 		if(esquina != null){
-			ListaSimple_impl tramos = this.buscarTramosConEsquina(esquina);
+			ListaSimple_impl tramos = this.buscarTramosByEsquina(esquina);
 			NodoLista nodo = (NodoLista)tramos.ObtenerElementoPrimero();
 			while(nodo != null){
 				Tramo tramo = (Tramo) nodo.getDato();
@@ -235,26 +251,13 @@ public class Sistema implements ISistema {
 			return new Retorno(Resultado.ERROR_1);
 		}		
 	}
-	
-	private ListaSimple_impl buscarTramosConEsquina(Esquina esquina){
-		ListaSimple_impl retorno = new ListaSimple_impl();
-		NodoLista nodo =(NodoLista) this.listaTramos.ObtenerElementoPrimero();
-		while(nodo != null){
-			Tramo tramo = (Tramo)nodo.getDato();
-			if (tramo.getEsquinaOrigen().equals(esquina) || tramo.getEsquinaDestino().equals(esquina)){
-				retorno.insertarAlPrincipio(tramo);
-			}
-			nodo = nodo.getSiguiente();
-		}
-		return retorno;
-	}
 
 	@Override
 	public Retorno eliminarTramo(Double coordXi, Double coordYi, Double coordXf, Double coordYf) {
 		Esquina inicio = (Esquina) this.listaEsquinas.buscar(new Esquina(coordXi, coordYi));
 		Esquina fin = (Esquina) this.listaEsquinas.buscar(new Esquina(coordXf, coordYf));
 		if(inicio != null && fin != null){
-			Tramo tramo = (Tramo) this.listaTramos.buscar(new Tramo(inicio, fin));
+			Tramo tramo = (Tramo) this.listaTramos.buscar(new Tramo(inicio, fin, 0));
 			if(tramo != null){
 				this.listaTramos.borrarElemento(tramo);
 				return new Retorno(Resultado.OK);
@@ -270,27 +273,96 @@ public class Sistema implements ISistema {
 
 	@Override
 	public Retorno movilMasCercano(Double coordX, Double coordY) {
-		return new Retorno(Resultado.NO_IMPLEMENTADA);
+		Movil movilMasCercano = new Movil();
+		int metros = -1;
+		
+		if(this.getArbolMoviles().esArbolVacio())
+			return new Retorno(Resultado.OK);
+		
+		//El mejor caso posible. Que en la esquina en la que estoy parado, haya un movil disponible.
+		Esquina esquina = (Esquina) this.listaEsquinas.buscar(new Esquina(coordX, coordY));
+		if(esquina != null){
+			if(esquina.getMovil() != null && esquina.getMovil().getEstadoMovil().equals(EstadoMovil.DISPONIBLE)){
+				movilMasCercano = esquina.getMovil();
+				movilMasCercano.setEstadoMovil(EstadoMovil.ASIGNADO);
+				System.out.println(movilMasCercano.getMatricula() + ";" + metros + ";" + movilMasCercano.getConductor());
+				return new Retorno(Resultado.OK);
+			}
+			
+			//Si no encontre movil disponible en la esquina, voy a buscar en el radio.
+			ListaOrdenada_impl listaTodosLosMovilesOrdenada = provider.obtenerMovilesEnRadio(1000000);
+			if(listaTodosLosMovilesOrdenada != null && !listaTodosLosMovilesOrdenada.esVacia()){
+				Nodo_ListaOrdenada aux = (Nodo_ListaOrdenada) listaTodosLosMovilesOrdenada.ObtenerElementoPrimero();
+				while(aux != null){
+					movilMasCercano = (Movil) aux.getDato();
+					if(movilMasCercano.getEstadoMovil().equals(EstadoMovil.DISPONIBLE)){
+						movilMasCercano.setEstadoMovil(EstadoMovil.ASIGNADO);
+						System.out.println(movilMasCercano.getMatricula() + ";" + metros + ";" + movilMasCercano.getConductor());
+						return new Retorno(Resultado.OK);
+					}
+					aux = aux.getSiguiente();
+				}
+			}
+		}else{
+			System.out.println("Error 1 - No existe esquina en el sistema");
+			return new Retorno(Resultado.ERROR_1);
+		}
+		return new Retorno(Resultado.OK);
 	}
 
 	@Override
 	public Retorno verMovilesEnRadio(Double coordX, Double coordY, int radio) {
+		if(this.getArbolMoviles().esArbolVacio())
+			return new Retorno(Resultado.OK);
+		
+		ListaOrdenada_impl lstMovilesEnRadio = provider.obtenerMovilesEnRadio(radio);
+		
+		if(lstMovilesEnRadio != null && !lstMovilesEnRadio.esVacia()){
+			Nodo_ListaOrdenada aux = (Nodo_ListaOrdenada) lstMovilesEnRadio.ObtenerElementoPrimero();
+			while(aux != null){
+				EntidadRetornable_Movil_Radio movilRadio = new EntidadRetornable_Movil_Radio();
+				movilRadio = (EntidadRetornable_Movil_Radio) aux.getDato();
+				movilRadio.toString();
+				aux = aux.getSiguiente();
+			}
+		}
 		return new Retorno(Resultado.NO_IMPLEMENTADA);
 	}
 
 	@Override
 	public Retorno verMapa() {
-		return new Retorno(Resultado.NO_IMPLEMENTADA);
+		try {
+            abrirMapa();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+		
+		return new Retorno(Resultado.OK);
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
+    private void abrirMapa() throws IOException, URISyntaxException {
+        String puntosMapa = "http://maps.googleapis.com/maps/api/staticmap?size=1200x600" + this.listaEsquinas + this.listaTramos;
+        Desktop.getDesktop().browse(new URI(puntosMapa));
+    }
+    
+    public Hash listadoPuntosMapa() {
+        return puntosGrafo;
+    }
+    
+	private ListaSimple_impl buscarTramosByEsquina(Esquina esquina){
+		ListaSimple_impl retorno = new ListaSimple_impl();
+		NodoLista nodo =(NodoLista) this.listaTramos.ObtenerElementoPrimero();
+		while(nodo != null){
+			Tramo tramo = (Tramo)nodo.getDato();
+			if (tramo.getEsquinaOrigen().equals(esquina) || tramo.getEsquinaDestino().equals(esquina)){
+				retorno.insertarAlPrincipio(tramo);
+			}
+			nodo = nodo.getSiguiente();
+		}
+		return retorno;
+	}
 	
 	
 	public int getiCantEsquinas() {
@@ -316,4 +388,36 @@ public class Sistema implements ISistema {
 	public void setListaTramos(ListaSimple_impl listaTramos) {
 		this.listaTramos = listaTramos;
 	}
+	public ListaSimple_impl getListaEsquinas() {
+		return listaEsquinas;
+	}
+
+	public void setListaEsquinas(ListaSimple_impl listaEsquinas) {
+		this.listaEsquinas = listaEsquinas;
+	}
+
+	public Hash getPuntosGrafo() {
+		return puntosGrafo;
+	}
+
+	public void setPuntosGrafo(Hash puntosGrafo) {
+		this.puntosGrafo = puntosGrafo;
+	}
+
+	public provider getProvider() {
+		return provider;
+	}
+
+	public void setProvider(provider provider) {
+		this.provider = provider;
+	}
+
+	public GrafoMatrizAdyacencia_impl getGrafoMatrizAdy() {
+		return grafoMatrizAdy;
+	}
+
+	public void setGrafoMatrizAdy(GrafoMatrizAdyacencia_impl grafoMatrizAdy) {
+		this.grafoMatrizAdy = grafoMatrizAdy;
+	}
+
 }

@@ -54,7 +54,6 @@ public class Esquina {
 	}
 
 	public Movil getMovil() {
-		// TODO Auto-generated method stub
 		return this.movil;
 	}
 	

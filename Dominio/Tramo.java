@@ -11,11 +11,6 @@ public class Tramo {
 	private static int numerador = 0;
 
 	public Tramo() {}
-	
-	public Tramo (Esquina origen, Esquina destino){
-		this.esquinaOrigen = origen;
-		this.esquinaDestino = destino;
-	}
 
 	public Tramo(Esquina origen, Esquina destino, int metros) {
 		this.esquinaOrigen = origen;
@@ -30,8 +25,7 @@ public class Tramo {
 			return false;
 		Tramo that = (Tramo) other;
 		return this.getEsquinaOrigen().equals(that.getEsquinaOrigen()) && 
-				this.getEsquinaDestino().equals(that.getEsquinaDestino()) &&
-				this.getMetros() == that.getMetros();
+				this.getEsquinaDestino().equals(that.getEsquinaDestino());
 	}
 
 	@Override
