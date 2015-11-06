@@ -25,11 +25,11 @@ public interface IGrafo {
 	// Pre: El vértice v existe en el grafo
 	// Post: Retorna una lista con los vértices adyacentes de v.
 	// Si v no tiene adyacentes retorna la lista vacía
-	public ILista verticesAdyacentes(int v);
+	//public ILista verticesAdyacentes(int v);
 
 	// Pre: a y b son vértices del grafo
 	// Post: Retorna true sii los vértices a y b son adyacentes.
-	public boolean sonAdyacentes(int a, int b);
+	//public boolean sonAdyacentes(int a, int b);
 
 	// Post: Retorna true sii el vértice fue ingresado al grafo
 	public boolean estaVertice(int v);

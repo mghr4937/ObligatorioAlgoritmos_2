@@ -6,22 +6,20 @@ import Estructuras.ListaOrdenada.ILista;
 import Estructuras.ListaOrdenada.ListaOrdenada_impl;
 
 public class GrafoMatrizAdyacencia_impl implements IGrafo {
-
-	int size;
+	
 	int cantNodos;
-	public Arco_MA[][] MatrizAdyacencia;
+	public int [][] MatrizAdyacencia;
 	boolean[] nodosUsados;
 
 	// Crea el grafo vacio (sin nodos ni aristas) con capacidad de
 	// almacenamiento de n vértices
 	public GrafoMatrizAdyacencia_impl(int cantNodos) {
-		this.size = 0;
 		this.cantNodos = cantNodos;
 
-		this.MatrizAdyacencia = new Arco_MA[cantNodos + 1][cantNodos + 1];
+		this.MatrizAdyacencia = new int[cantNodos + 1][cantNodos + 1];
 		for (int i = 1; i <= cantNodos; i++)
 			for (int j = 1; j <= cantNodos; j++)
-				this.MatrizAdyacencia[i][j] = new Arco_MA();
+				this.MatrizAdyacencia[i][j] = 0;
 
 		this.nodosUsados = new boolean[cantNodos + 1];
 	}
@@ -29,34 +27,32 @@ public class GrafoMatrizAdyacencia_impl implements IGrafo {
 	@Override
 	public void agregarVertice(int v) {
 		this.nodosUsados[v] = true;
-		this.size++;
+		this.cantNodos++;
 	}
 
 	@Override
 	public void agregarArista(int origen, int destino, int peso) {
-		Arco_MA nuevo = new Arco_MA(peso);
-		this.MatrizAdyacencia[origen][destino] = nuevo;
+		this.MatrizAdyacencia[origen][destino] = peso;
 	}
 
 	@Override
 	public void eliminarVertice(int v) {
 		this.nodosUsados[v] = false;
-		this.size--;
+		this.cantNodos--;
 
 		// Elimino las aristas donde v es miembro
 		for (int i = 1; i <= this.cantNodos; i++) {
-			this.MatrizAdyacencia[i][v] = new Arco_MA();
-			this.MatrizAdyacencia[v][i] = new Arco_MA();
+			this.MatrizAdyacencia[i][v] = 0;
+			this.MatrizAdyacencia[v][i] = 0;
 		}
 	}
 
 	@Override
 	public void eliminarArista(int origen, int destino) {
-		Arco_MA nuevo = new Arco_MA();
-		this.MatrizAdyacencia[origen][destino] = nuevo;
+		this.MatrizAdyacencia[origen][destino] = 0;
 	}
 
-	@Override
+	/*@Override
 	public ILista verticesAdyacentes(int v) {
 		ILista l = new ListaOrdenada_impl();
 		for (int i = 1; i <= this.cantNodos; i++) {
@@ -65,12 +61,12 @@ public class GrafoMatrizAdyacencia_impl implements IGrafo {
 			}
 		}
 		return l;
-	}
+	}*/
 
-	@Override
+	/*@Override
 	public boolean sonAdyacentes(int a, int b) {
 		return this.MatrizAdyacencia[a][b].existe;
-	}
+	}*/
 
 	@Override
 	public boolean estaVertice(int v) {
@@ -79,7 +75,7 @@ public class GrafoMatrizAdyacencia_impl implements IGrafo {
 
 	@Override
 	public boolean esVacio() {
-		return this.size == 0;
+		return this.cantNodos == 0;
 	}
 	
 	
@@ -120,13 +116,6 @@ public class GrafoMatrizAdyacencia_impl implements IGrafo {
 
 	public void setHash(Hash hash) {
 		this.hash = hash;
-	}
-	public int getSize() {
-		return size;
-	}
-
-	public void setSize(int size) {
-		this.size = size;
 	}
 
 	public int getCantNodos() {

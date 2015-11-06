@@ -17,6 +17,7 @@ import Estructuras.ListaOrdenada.ListaOrdenada_impl;
 import Estructuras.ListaOrdenada.Nodo_ListaOrdenada;
 import Estructuras.ListaSimple.ListaSimple_impl;
 import Estructuras.ListaSimple.NodoLista;
+import Providers.DistanciaEsquina;
 import Providers.provider;
 
 public class Sistema implements ISistema {
@@ -26,8 +27,7 @@ public class Sistema implements ISistema {
 	private ListaSimple_impl listaTramos;
 	private ListaSimple_impl listaEsquinas;
 	private Hash puntosGrafo;
-	private GrafoMatrizAdyacencia_impl grafoMatrizAdy = new GrafoMatrizAdyacencia_impl(listaEsquinas.largo());
-
+	//private GrafoMatrizAdyacencia_impl grafoMatrizAdy = new GrafoMatrizAdyacencia_impl(listaEsquinas.largo());
 
 	private provider provider = new provider();
 
@@ -187,7 +187,7 @@ public class Sistema implements ISistema {
 
 	@Override
 	public Retorno registrarEsquina(Double coordX, Double coordY) {
-		if(this.getiCantEsquinas() < this.listaEsquinas.largo()){
+		if(this.getiCantEsquinas() > this.listaEsquinas.largo()){
 			Esquina esquina = new Esquina(coordX, coordY);
 			if(this.listaEsquinas.buscar(esquina) == null){
 				this.listaEsquinas.insertarAlPrincipio(esquina);
@@ -290,43 +290,33 @@ public class Sistema implements ISistema {
 			}
 			
 			//Si no encontre movil disponible en la esquina, voy a buscar en el radio.
-			ListaOrdenada_impl listaTodosLosMovilesOrdenada = provider.obtenerMovilesEnRadio(1000000);
-			if(listaTodosLosMovilesOrdenada != null && !listaTodosLosMovilesOrdenada.esVacia()){
-				Nodo_ListaOrdenada aux = (Nodo_ListaOrdenada) listaTodosLosMovilesOrdenada.ObtenerElementoPrimero();
-				while(aux != null){
-					movilMasCercano = (Movil) aux.getDato();
-					if(movilMasCercano.getEstadoMovil().equals(EstadoMovil.DISPONIBLE)){
-						movilMasCercano.setEstadoMovil(EstadoMovil.ASIGNADO);
-						System.out.println(movilMasCercano.getMatricula() + ";" + metros + ";" + movilMasCercano.getConductor());
-						return new Retorno(Resultado.OK);
-					}
-					aux = aux.getSiguiente();
-				}
-			}
+			//movilMasCercano = provider.movilMasCercano(esquina);
+				movilMasCercano.setEstadoMovil(EstadoMovil.ASIGNADO);
+				System.out.println(movilMasCercano.getMatricula() + ";" + metros + ";" + movilMasCercano.getConductor());
+				return new Retorno(Resultado.OK);
 		}else{
 			System.out.println("Error 1 - No existe esquina en el sistema");
 			return new Retorno(Resultado.ERROR_1);
 		}
-		return new Retorno(Resultado.OK);
 	}
 
 	@Override
 	public Retorno verMovilesEnRadio(Double coordX, Double coordY, int radio) {
-		if(this.getArbolMoviles().esArbolVacio())
-			return new Retorno(Resultado.OK);
-		
-		ListaOrdenada_impl lstMovilesEnRadio = provider.obtenerMovilesEnRadio(radio);
-		
-		if(lstMovilesEnRadio != null && !lstMovilesEnRadio.esVacia()){
-			Nodo_ListaOrdenada aux = (Nodo_ListaOrdenada) lstMovilesEnRadio.ObtenerElementoPrimero();
-			while(aux != null){
-				EntidadRetornable_Movil_Radio movilRadio = new EntidadRetornable_Movil_Radio();
-				movilRadio = (EntidadRetornable_Movil_Radio) aux.getDato();
-				movilRadio.toString();
-				aux = aux.getSiguiente();
-			}
-		}
-		return new Retorno(Resultado.NO_IMPLEMENTADA);
+//		if(this.getArbolMoviles().esArbolVacio())
+//			return new Retorno(Resultado.OK);
+//		
+//		//ListaOrdenada_impl lstMovilesEnRadio = provider.obtenerMovilesEnRadio(radio);
+//		
+//		if(lstMovilesEnRadio != null && !lstMovilesEnRadio.esVacia()){
+//			Nodo_ListaOrdenada aux = (Nodo_ListaOrdenada) lstMovilesEnRadio.ObtenerElementoPrimero();
+//			while(aux != null){
+//				EntidadRetornable_Movil_Radio movilRadio = new EntidadRetornable_Movil_Radio();
+//				movilRadio = (EntidadRetornable_Movil_Radio) aux.getDato();
+//				movilRadio.toString();
+//				aux = aux.getSiguiente();
+//			}
+//		}
+		return new Retorno(Resultado.OK);
 	}
 
 	@Override
@@ -364,7 +354,102 @@ public class Sistema implements ISistema {
 		return retorno;
 	}
 	
+	public ListaOrdenada_impl obtenerMovilesEnRadio(int radio) {
+		ListaOrdenada_impl lstRetorno = new ListaOrdenada_impl();
+		// Aca recorro con Dijkstra y voy creando y guardando entidades EntidadRetornable_Movil_Radio (inserto ordenado)
+		
+		return lstRetorno;
+	}
 	
+	public DistanciaEsquina[][] caminosMinimos(Esquina esquina){
+		DistanciaEsquina minimo = new DistanciaEsquina(99999, -1) ;
+		int min = 999999;
+		int esquinaSig = -1;
+		int esquinaActual = esquina.getEsquinaId();
+		GrafoMatrizAdyacencia_impl grafo = new GrafoMatrizAdyacencia_impl(this.listaEsquinas.largo());
+		DistanciaEsquina[][] caminos = new DistanciaEsquina[grafo.getCantNodos()+1][grafo.getCantNodos()+1];// [x]=idCiudad [y]=paso		
+		grafo.MatrizAdyacencia = this.GenerarMatrizAdy();
+		for (int numeroDePaso = 1; numeroDePaso < grafo.getCantNodos()+1; numeroDePaso++) {
+			for (int destino = 1; destino < grafo.getCantNodos()+1; destino++) {
+				if (grafo.MatrizAdyacencia[esquinaActual][destino] > 0) {// si hay camino, -1 = no adyacentes
+					if (grafo.getNodosUsados()[destino] != true) {
+						grafo.getNodosUsados()[destino] = true;
+						DistanciaEsquina distanciaEsquina = new DistanciaEsquina();
+						distanciaEsquina.setIdEsquinaAnterior(esquinaActual);
+						distanciaEsquina.setDistanciaAcumulada(distanciaEsquina.getDistanciaAcumulada()
+																+ grafo.MatrizAdyacencia[esquinaActual][destino]);
+						DistanciaEsquina aux = caminos[destino][numeroDePaso - 1];
+						if (aux == null	|| aux.getDistanciaAcumulada() > distanciaEsquina.getDistanciaAcumulada()) {//comparo con la distancia del paso anterior al mismo destino
+							caminos[destino][numeroDePaso] = distanciaEsquina;	//si es menor la guardo				
+						} else {
+							caminos[destino][numeroDePaso] = aux; // si es mayor me quedo con la anterior
+						}
+						if (min > caminos[destino][numeroDePaso].getDistanciaAcumulada()) {//me quedo con el de menor distancia de ese paso
+							minimo = new DistanciaEsquina();
+							minimo = caminos[destino][numeroDePaso];
+							min = minimo.getDistanciaAcumulada();
+							esquinaSig = destino;
+						}
+					}
+				}
+			}
+			esquinaActual = esquinaSig;			
+			min = 9999999;
+		}	
+		
+		return caminos;
+	}
+	
+	private int[][] GenerarMatrizAdy( ) {
+			
+		int largo = this.listaEsquinas.largo()+1;
+		int x = 1;
+			
+		int[][] matriz = new int[largo][largo];
+		while (x < largo) {
+			int y = 1;	
+			while (y < largo) {
+				Tramo tramo = new Tramo();
+				tramo.setEsquinaOrigen(this.getEsquinaById(x));
+				tramo.setEsquinaDestino(this.getEsquinaById(y));
+				tramo = (Tramo) this.getListaTramos().buscar(tramo);
+				if (tramo != null) {
+					matriz[x][y] = tramo.getMetros();
+					matriz[y][x] = tramo.getMetros();
+				} else if (x == y) {
+					matriz[x][y] = 0;
+					matriz[y][x] = 0;
+				} else {
+					matriz[x][y] = -1;
+					matriz[y][x] = -1;
+				}
+				y++;
+			}			
+			x++;
+		}
+		return matriz;
+	}
+	
+	public Esquina getEsquinaById(int id){
+		Esquina esquinaBuscada;
+
+		if (this.getListaEsquinas().esVacia())
+			return null;
+		else {
+			NodoLista aux = (NodoLista) this.getListaEsquinas().ObtenerElementoPrimero();
+
+			while (aux != null) {
+				esquinaBuscada = (Esquina) aux.getDato();
+
+				if (esquinaBuscada.getEsquinaId() == id)
+					return esquinaBuscada;
+				else
+					aux = aux.getSiguiente();
+			}
+		}
+		return null;
+	}
+
 	public int getiCantEsquinas() {
 		return iCantEsquinas;
 	}
@@ -412,12 +497,41 @@ public class Sistema implements ISistema {
 		this.provider = provider;
 	}
 
-	public GrafoMatrizAdyacencia_impl getGrafoMatrizAdy() {
-		return grafoMatrizAdy;
+//	public GrafoMatrizAdyacencia_impl getGrafoMatrizAdy() {
+//		return grafoMatrizAdy;
+//	}
+//
+//	public void setGrafoMatrizAdy(GrafoMatrizAdyacencia_impl grafoMatrizAdy) {
+//		this.grafoMatrizAdy = grafoMatrizAdy;
+//	}
+	
+	public void imprimir(){
+		//provider prov = new provider();
+		Esquina esq = this.getEsquinaById(1);
+		DistanciaEsquina [][] dist= this.caminosMinimos(esq);
+		for(int x = 0 ;x < dist.length-1;x++){
+			for(int y = 0 ;y < dist[0].length-1;y++){
+				if(dist[x][y] !=null){
+					System.out.print(" "+dist[x][y].toString()+" ");
+				}else{
+					System.out.print(" #-# ");
+				}
+			}
+			System.out.println(" ");
+		}
 	}
-
-	public void setGrafoMatrizAdy(GrafoMatrizAdyacencia_impl grafoMatrizAdy) {
-		this.grafoMatrizAdy = grafoMatrizAdy;
+	
+	public void imprimir2(){
+		//provider prov = new provider();
+		//Esquina esq = this.getEsquinaById(1);
+		int [][] dist= this.GenerarMatrizAdy();
+		for(int x = 0 ;x < dist.length;x++){
+			for(int y = 0 ;y < dist[0].length;y++){
+				System.out.print(" ("+dist[x][y]+") ");
+			}
+			System.out.println(" ");
+		}
 	}
+	
 
 }
