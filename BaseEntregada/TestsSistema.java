@@ -11,7 +11,6 @@ import Estructuras.ArbolBinario.NodoArbolBinario;
 public class TestsSistema {
 
 	//******************* INICIO PUNTOS 1 ********************
-	
 	/*
 	@Test
 	public void inicializarSistema_returnOk() {
@@ -554,6 +553,123 @@ public class TestsSistema {
 		Retorno eliminarTramo = sistema.eliminarTramo(1.555, 1.222, 1.51, 1.21);
 		assertEquals(eliminarTramo.resultado, Retorno.Resultado.ERROR_2);
 		assertEquals(0,sistema.getListaTramos().largo());
+	}
+	*/
+	
+	@Test
+	public void movilMasCercano_noHayMoviles() {
+		//Creo el sistema
+		Sistema sistema = new Sistema();
+		sistema.inicializarSistema(5);
+		
+		//Registro 5 esquinas
+		Retorno retornoRegistrarEsquinaUno = sistema.registrarEsquina(1.555, 1.222);
+		assertEquals(retornoRegistrarEsquinaUno.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaDos = sistema.registrarEsquina(1.51, 1.21);
+		assertEquals(retornoRegistrarEsquinaDos.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaTres = sistema.registrarEsquina(1.52, 1.221);
+		assertEquals(retornoRegistrarEsquinaTres.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCuatro = sistema.registrarEsquina(1.53, 1.24);
+		assertEquals(retornoRegistrarEsquinaCuatro.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCinco = sistema.registrarEsquina(1.54, 1.25);
+		assertEquals(retornoRegistrarEsquinaCinco.resultado, Retorno.Resultado.OK);
+		
+		//Cuento las esquinas del sistema
+		assertEquals(5,sistema.getListaEsquinas().largo());
+		
+		//Registro los tramos
+		Retorno retornoRegistrarTramo_A_B = sistema.registrarTramo(1.555, 1.222, 1.51, 1.21, 1);
+		assertEquals(retornoRegistrarTramo_A_B.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_A_D = sistema.registrarTramo(1.555, 1.222, 1.53, 1.24, 5);
+		assertEquals(retornoRegistrarTramo_A_D.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_B_C = sistema.registrarTramo(1.51, 1.21, 1.52, 1.221, 2);
+		assertEquals(retornoRegistrarTramo_B_C.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_C_E = sistema.registrarTramo(1.52, 1.221, 1.54, 1.25, 3);
+		assertEquals(retornoRegistrarTramo_C_E.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_D_E = sistema.registrarTramo(1.53, 1.24, 1.54, 1.25, 2);
+		assertEquals(retornoRegistrarTramo_D_E.resultado, Retorno.Resultado.OK);
+		
+		//Cuento los tramos (deben ser el doble de la cantidad de esquinas porque son bidireccionales
+		assertEquals(10,sistema.getListaTramos().largo());
+		
+		//Busco el movil mas cercano a la esquina uno (sin haber registrado moviles)
+		Retorno retornoMovilMasCercano = sistema.movilMasCercano(1.555, 1.222);
+		assertEquals(retornoMovilMasCercano.resultado, Retorno.Resultado.OK);
+	}
+	
+	/*
+	@Test
+	public void movilMasCercano_movilEnEsquina_returnOk() {
+		Sistema sistema = new Sistema();
+		sistema.inicializarSistema(5);
+		
+		Retorno retornoRegistrarEsquinaUno = sistema.registrarEsquina(1.555, 1.222);
+		assertEquals(retornoRegistrarEsquinaUno.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaDos = sistema.registrarEsquina(1.51, 1.21);
+		assertEquals(retornoRegistrarEsquinaDos.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaTres = sistema.registrarEsquina(1.52, 1.221);
+		assertEquals(retornoRegistrarEsquinaTres.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCuatro = sistema.registrarEsquina(1.53, 1.24);
+		assertEquals(retornoRegistrarEsquinaCuatro.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCinco = sistema.registrarEsquina(1.54, 1.25);
+		assertEquals(retornoRegistrarEsquinaCinco.resultado, Retorno.Resultado.OK);
+		assertEquals(5,sistema.getListaEsquinas().largo());
+		Retorno retornoRegistrarTramo_A_B = sistema.registrarTramo(1.555, 1.222, 1.51, 1.21, 1);
+		assertEquals(retornoRegistrarTramo_A_B.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_A_D = sistema.registrarTramo(1.555, 1.222, 1.53, 1.24, 5);
+		assertEquals(retornoRegistrarTramo_A_D.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_B_C = sistema.registrarTramo(1.51, 1.21, 1.52, 1.221, 2);
+		assertEquals(retornoRegistrarTramo_B_C.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_C_E = sistema.registrarTramo(1.52, 1.221, 1.54, 1.25, 3);
+		assertEquals(retornoRegistrarTramo_C_E.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_D_E = sistema.registrarTramo(1.53, 1.24, 1.54, 1.25, 2);
+		assertEquals(retornoRegistrarTramo_D_E.resultado, Retorno.Resultado.OK);
+		assertEquals(10,sistema.getListaTramos().largo());
+		Retorno retornoMovilUno = sistema.registrarMovil("ABC1234", "46110887");
+		assertEquals(retornoMovilUno.resultado, Retorno.Resultado.OK);
+		Retorno retornoMovilDos = sistema.registrarMovil("BCD2345", "43553319");
+		assertEquals(retornoMovilDos.resultado, Retorno.Resultado.OK);
+		Retorno retornoMovilTres = sistema.registrarMovil("DEF2345", "35059091");
+		assertEquals(retornoMovilTres.resultado, Retorno.Resultado.OK);
+		Retorno retornoAsignacionUno = sistema.asignarUbicacionMovil("ABC1234", 1.555, 1.222);
+		assertEquals(retornoAsignacionUno.resultado, Retorno.Resultado.OK);
+		Retorno retornoMovilMasCercano = sistema.movilMasCercano(1.555, 1.222);
+		assertEquals(retornoMovilMasCercano.resultado, Retorno.Resultado.OK);
+	}
+	
+	@Test
+	public void movilMasCercano_esquinaMasCercanaRespectoParametro() {
+		
+	}
+	
+	@Test
+	public void movilMasCercano_esquinaMasLejanaRespectoParametro() {
+		
+	}
+	
+	@Test
+	public void movilMasCercano_dosMovilesEnDiferentesEsquinasPeroMismaDistancia() {
+		
+	}
+	
+	@Test
+	public void movilMasCercano_unicoMovilEnEsquinaDelParametroPeroNoDisponible() {
+		
+	}
+	
+	@Test
+	public void movilMasCercano_movilEnEsquinaDelParametroPeroNoDisponible_retornaSiguiente() {
+		
+	}
+	
+	@Test
+	public void movilMasCercano_movilLejosDeEsquinaDelParametroNoDisponible_retornaSiguiente() {
+		
+	}
+	
+	@Test
+	public void movilMasCercano_errorUno() {
+		
 	}
 	*/
 	

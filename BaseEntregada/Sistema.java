@@ -207,10 +207,13 @@ public class Sistema implements ISistema {
 			Esquina fin = new Esquina(coordXf,coordYf);
 			fin = (Esquina)this.listaEsquinas.buscar(fin);
 			if(inicio != null && fin != null){
-				Tramo tramo = new Tramo(inicio, fin, metros);
-				if(!this.listaTramos.pertenece(tramo)){
-					this.listaTramos.insertarAlPrincipio(tramo);
-					System.out.println(tramo.toString());
+				Tramo tramoIda = new Tramo(inicio, fin, metros);
+				Tramo tramoVuelta = new Tramo(fin, inicio, metros);
+				if(!this.listaTramos.pertenece(tramoIda)){
+					this.listaTramos.insertarAlPrincipio(tramoIda);
+					this.listaTramos.insertarAlPrincipio(tramoVuelta);
+					System.out.println(tramoIda.toString());
+					System.out.println(tramoVuelta.toString());
 					return new Retorno(Resultado.OK);
 				}else{
 					System.out.println("Error 3 - Tramo ya existe en el sistema.");
