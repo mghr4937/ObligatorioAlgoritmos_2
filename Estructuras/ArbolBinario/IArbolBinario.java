@@ -20,11 +20,11 @@ public interface IArbolBinario {
 
 	void mostrarPosOrder(NodoArbolBinario nodo);
 
-	boolean existeElemento(Object dato);
+	boolean existeElemento(NodoArbolBinario dato);
 
-	boolean existe(Object dato, NodoArbolBinario nodo);
+	boolean existe(NodoArbolBinario dato, NodoArbolBinario nodo);
 
-	NodoArbolBinario obtenerElemento(Object dato, NodoArbolBinario nodo);
+	NodoArbolBinario obtenerElemento(Object buscado, NodoArbolBinario nodo);
 
 	int cantNodos(NodoArbolBinario nodo);
 

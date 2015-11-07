@@ -1,5 +1,6 @@
 package Estructuras.ArbolBinario;
 
+
 public class ArbolBinarioImpl implements IArbolBinario {
 
 	private NodoArbolBinario raiz;
@@ -53,7 +54,7 @@ public class ArbolBinarioImpl implements IArbolBinario {
 	public String mostrarInOrder(NodoArbolBinario nodo, String str) {
 		if (nodo != null) {
 			str =  mostrarInOrder(nodo.getIzq(), str);
-			str = str +("| " +nodo.getDato() + " ");
+			str = str +(nodo.getDato() + " | ");
 			str =  mostrarInOrder(nodo.getDer(), str);
 		}
 		return str;
@@ -75,28 +76,20 @@ public class ArbolBinarioImpl implements IArbolBinario {
 	}
 
 	@Override
-	public boolean existeElemento(Object dato) {
-		NodoArbolBinario nodo = obtenerElemento(dato, raiz);
-		if (nodo != null)
-			return true;
-		else
-			return false;
+	public boolean existeElemento(NodoArbolBinario nodoBuscado){
+		return existeElemento(nodoBuscado, raiz);
 	}
-
-	@Override
-	public boolean existe(Object dato, NodoArbolBinario nodo) {
-		boolean existe;
-		if (nodo == null)
-			existe = false;
-		else {
-			if (dato == nodo.getDato())
-				existe = true;
-			else if (dato.toString().compareToIgnoreCase(nodo.getDato().toString()) < 0)
-				existe = existe(dato, nodo.getIzq());
-			else
-				existe = existe(dato, nodo.getDer());
+	
+	private boolean existeElemento(NodoArbolBinario nodoBuscado, NodoArbolBinario n){
+		if(n == null){
+			return false;
 		}
-		return existe;
+		if(n.getDato().equals(nodoBuscado)){
+			return true;
+		}else{
+			return existeElemento(nodoBuscado,n.getIzq()) || existeElemento(nodoBuscado, n.getDer());
+			//Esto hace que si encontras el resultado en la rama izquierda, no recorre la rama derecha. Porque true con false igual es true
+		}
 	}
 
 	@Override
@@ -285,6 +278,12 @@ public class ArbolBinarioImpl implements IArbolBinario {
 			return nodo;
 		else
 			return maximo(nodo.getDer());
+	}
+
+	@Override
+	public boolean existe(NodoArbolBinario dato, NodoArbolBinario nodo) {
+		// TODO Auto-generated method stub
+		return false;
 	}
    
     

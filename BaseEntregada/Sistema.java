@@ -8,13 +8,11 @@ import java.net.URISyntaxException;
 import BaseEntregada.Retorno.Resultado;
 import Dominio.*;
 import Dominio.Movil.EstadoMovil;
-import Dominio.EntidadesAuxiliares.EntidadRetornable_Movil_Radio;
 import Estructuras.ArbolBinario.ArbolBinarioImpl;
 import Estructuras.ArbolBinario.NodoArbolBinario;
 import Estructuras.Grafo.MatrizAdyacencia.GrafoMatrizAdyacencia_impl;
 import Estructuras.Hash.Hash;
 import Estructuras.ListaOrdenada.ListaOrdenada_impl;
-import Estructuras.ListaOrdenada.Nodo_ListaOrdenada;
 import Estructuras.ListaSimple.ListaSimple_impl;
 import Estructuras.ListaSimple.NodoLista;
 import Providers.DistanciaEsquina;
@@ -54,8 +52,8 @@ public class Sistema implements ISistema {
 
 	@Override
 	public Retorno registrarMovil(String matricula, String conductor) {
-		boolean yaExiste = arbolMoviles.existeElemento(matricula);
-		if (yaExiste == false) {
+		Movil buscado = this.getMovilByMatricula(matricula);
+		if (buscado == null) {
 			Movil nuevoMovil = new Movil(matricula, conductor, EstadoMovil.DISPONIBLE);
 			if (this.arbolMoviles.esArbolVacio()) {
 				this.arbolMoviles.insertar(nuevoMovil);
@@ -122,11 +120,10 @@ public class Sistema implements ISistema {
 		if (nodoMovilBuscado != null) {
 			Movil movilBuscado = (Movil) nodoMovilBuscado.getDato();
 			if (movilBuscado.getEstadoMovil().equals(EstadoMovil.ASIGNADO)) {
-				System.out.println("Error 1 - Movil en estado asignado");
+				System.out.println("Error 2 - Movil en estado asignado");
 				return new Retorno(Resultado.ERROR_2);
 			} else {
 				this.arbolMoviles.borrarElemento(nodoMovilBuscado);
-				this.arbolMoviles.mostrarPreOrder();
 				return new Retorno(Resultado.OK);
 			}
 		} else {
@@ -137,7 +134,7 @@ public class Sistema implements ISistema {
 
 	@Override
 	public Retorno asignarUbicacionMovil(String matricula, Double coordX, Double coordY) {
-		Movil movil =(Movil) this.arbolMoviles.obtenerElemento(matricula, this.arbolMoviles.getRaiz()).getDato();
+		Movil movil = getMovilByMatricula(matricula);
 		if (movil != null){
 			Esquina esquina =(Esquina) this.listaEsquinas.buscar(new Esquina(coordX,coordY));
 			if(esquina != null){			
@@ -177,9 +174,8 @@ public class Sistema implements ISistema {
 		String str = "";
 		String aux = "";
 		Retorno retorno = new Retorno(Resultado.OK);
-		if(!this.arbolMoviles.esArbolVacio()){
+		if(!this.arbolMoviles.esArbolVacio())
 			str = this.arbolMoviles.mostrarInOrder(aux);
-		}
 		System.out.println(str);
 		retorno.valorString = str;
 		return retorno;
@@ -217,7 +213,7 @@ public class Sistema implements ISistema {
 					System.out.println(tramo.toString());
 					return new Retorno(Resultado.OK);
 				}else{
-					System.out.println("Error 3 - Tramo ya existe en es sistema.");
+					System.out.println("Error 3 - Tramo ya existe en el sistema.");
 					return new Retorno(Resultado.ERROR_3);
 				}
 			}else{
@@ -235,6 +231,11 @@ public class Sistema implements ISistema {
 		Esquina esquina = new Esquina(coordX ,coordY);
 		esquina = (Esquina)this.listaEsquinas.buscar(esquina);
 		if(esquina != null){
+			if(esquina.getMovil() != null){
+				System.out.println("Error 2 - Hay un movil en esa esquina. No se puede borrar");
+				return new Retorno(Resultado.ERROR_2);
+			}
+			
 			ListaSimple_impl tramos = this.buscarTramosByEsquina(esquina);
 			NodoLista nodo = (NodoLista)tramos.ObtenerElementoPrimero();
 			while(nodo != null){
@@ -533,5 +534,14 @@ public class Sistema implements ISistema {
 		}
 	}
 	
-
+	public Movil getMovilByMatricula(String matricula){
+		Movil movilBuscado = new Movil(matricula);
+		NodoArbolBinario nodoMovilBuscado = this.arbolMoviles.obtenerElemento(movilBuscado,this.arbolMoviles.getRaiz());
+		if(nodoMovilBuscado != null){
+			movilBuscado = (Movil) nodoMovilBuscado.getDato();
+			return movilBuscado;
+		}
+		return null;
+	}
+	
 }
