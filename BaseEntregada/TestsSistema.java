@@ -6,12 +6,11 @@ import org.junit.Test;
 
 import Dominio.Movil;
 import Dominio.Movil.EstadoMovil;
-import Estructuras.ArbolBinario.NodoArbolBinario;
 
 public class TestsSistema {
 
 	//******************* INICIO PUNTOS 1 ********************
-	/*
+	
 	@Test
 	public void inicializarSistema_returnOk() {
 		Sistema sistema = new Sistema();
@@ -554,7 +553,6 @@ public class TestsSistema {
 		assertEquals(eliminarTramo.resultado, Retorno.Resultado.ERROR_2);
 		assertEquals(0,sistema.getListaTramos().largo());
 	}
-	*/
 	
 	@Test
 	public void movilMasCercano_noHayMoviles() {
@@ -589,20 +587,25 @@ public class TestsSistema {
 		Retorno retornoRegistrarTramo_D_E = sistema.registrarTramo(1.53, 1.24, 1.54, 1.25, 2);
 		assertEquals(retornoRegistrarTramo_D_E.resultado, Retorno.Resultado.OK);
 		
-		//Cuento los tramos (deben ser el doble de la cantidad de esquinas porque son bidireccionales
+		//Cuento los tramos (deben ser el doble de la cantidad de esquinas porque son bidireccionales)
 		assertEquals(10,sistema.getListaTramos().largo());
 		
 		//Busco el movil mas cercano a la esquina uno (sin haber registrado moviles)
 		Retorno retornoMovilMasCercano = sistema.movilMasCercano(1.555, 1.222);
 		assertEquals(retornoMovilMasCercano.resultado, Retorno.Resultado.OK);
+		
+		//Compruebo que ademas de devolverme el Retorno que esperaba, 
+		//EL MOVIL QUE ME DEVOLVIO ES EL QUE YO SE QUE ESTA MAS CERCA. Y NO OTRO.
+		assertEquals("", Sistema.mensaje_movilMasCercano);
 	}
 	
-	/*
 	@Test
 	public void movilMasCercano_movilEnEsquina_returnOk() {
+		//Creo el sistema
 		Sistema sistema = new Sistema();
 		sistema.inicializarSistema(5);
-		
+				
+		//Registro 5 esquinas
 		Retorno retornoRegistrarEsquinaUno = sistema.registrarEsquina(1.555, 1.222);
 		assertEquals(retornoRegistrarEsquinaUno.resultado, Retorno.Resultado.OK);
 		Retorno retornoRegistrarEsquinaDos = sistema.registrarEsquina(1.51, 1.21);
@@ -613,7 +616,11 @@ public class TestsSistema {
 		assertEquals(retornoRegistrarEsquinaCuatro.resultado, Retorno.Resultado.OK);
 		Retorno retornoRegistrarEsquinaCinco = sistema.registrarEsquina(1.54, 1.25);
 		assertEquals(retornoRegistrarEsquinaCinco.resultado, Retorno.Resultado.OK);
+				
+		//Cuento las esquinas del sistema
 		assertEquals(5,sistema.getListaEsquinas().largo());
+				
+		//Registro los tramos
 		Retorno retornoRegistrarTramo_A_B = sistema.registrarTramo(1.555, 1.222, 1.51, 1.21, 1);
 		assertEquals(retornoRegistrarTramo_A_B.resultado, Retorno.Resultado.OK);
 		Retorno retornoRegistrarTramo_A_D = sistema.registrarTramo(1.555, 1.222, 1.53, 1.24, 5);
@@ -624,54 +631,735 @@ public class TestsSistema {
 		assertEquals(retornoRegistrarTramo_C_E.resultado, Retorno.Resultado.OK);
 		Retorno retornoRegistrarTramo_D_E = sistema.registrarTramo(1.53, 1.24, 1.54, 1.25, 2);
 		assertEquals(retornoRegistrarTramo_D_E.resultado, Retorno.Resultado.OK);
+				
+		//Cuento los tramos (deben ser el doble de la cantidad de esquinas porque son bidireccionales)
 		assertEquals(10,sistema.getListaTramos().largo());
-		Retorno retornoMovilUno = sistema.registrarMovil("ABC1234", "46110887");
-		assertEquals(retornoMovilUno.resultado, Retorno.Resultado.OK);
-		Retorno retornoMovilDos = sistema.registrarMovil("BCD2345", "43553319");
-		assertEquals(retornoMovilDos.resultado, Retorno.Resultado.OK);
-		Retorno retornoMovilTres = sistema.registrarMovil("DEF2345", "35059091");
-		assertEquals(retornoMovilTres.resultado, Retorno.Resultado.OK);
-		Retorno retornoAsignacionUno = sistema.asignarUbicacionMovil("ABC1234", 1.555, 1.222);
-		assertEquals(retornoAsignacionUno.resultado, Retorno.Resultado.OK);
+		
+		//Registro un movil
+		Retorno retornoMovil = sistema.registrarMovil("ABC1234", "46110887");
+		assertEquals(retornoMovil.resultado, Retorno.Resultado.OK);
+		
+		//Lo asigno a la esquina A
+		Retorno retornoAsignacion = sistema.asignarUbicacionMovil("ABC1234", 1.555, 1.222);
+		assertEquals(retornoAsignacion.resultado, Retorno.Resultado.OK);
+		
+		//Busco el movil mas cercano a la esquina uno
 		Retorno retornoMovilMasCercano = sistema.movilMasCercano(1.555, 1.222);
 		assertEquals(retornoMovilMasCercano.resultado, Retorno.Resultado.OK);
+				
+		//Compruebo que ademas de devolverme el Retorno que esperaba, 
+		//EL MOVIL QUE ME DEVOLVIO ES EL QUE YO SE QUE ESTA MAS CERCA. Y NO OTRO.
+		assertEquals("ABC1234;0;46110887", Sistema.mensaje_movilMasCercano);
 	}
 	
 	@Test
 	public void movilMasCercano_esquinaMasCercanaRespectoParametro() {
+		//Creo el sistema
+		Sistema sistema = new Sistema();
+		sistema.inicializarSistema(5);
+						
+		//Registro 5 esquinas
+		Retorno retornoRegistrarEsquinaUno = sistema.registrarEsquina(1.555, 1.222);
+		assertEquals(retornoRegistrarEsquinaUno.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaDos = sistema.registrarEsquina(1.51, 1.21);
+		assertEquals(retornoRegistrarEsquinaDos.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaTres = sistema.registrarEsquina(1.52, 1.221);
+		assertEquals(retornoRegistrarEsquinaTres.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCuatro = sistema.registrarEsquina(1.53, 1.24);
+		assertEquals(retornoRegistrarEsquinaCuatro.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCinco = sistema.registrarEsquina(1.54, 1.25);
+		assertEquals(retornoRegistrarEsquinaCinco.resultado, Retorno.Resultado.OK);
+						
+		//Cuento las esquinas del sistema
+		assertEquals(5,sistema.getListaEsquinas().largo());
+						
+		//Registro los tramos
+		Retorno retornoRegistrarTramo_A_B = sistema.registrarTramo(1.555, 1.222, 1.51, 1.21, 1);
+		assertEquals(retornoRegistrarTramo_A_B.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_A_D = sistema.registrarTramo(1.555, 1.222, 1.53, 1.24, 5);
+		assertEquals(retornoRegistrarTramo_A_D.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_B_C = sistema.registrarTramo(1.51, 1.21, 1.52, 1.221, 2);
+		assertEquals(retornoRegistrarTramo_B_C.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_C_E = sistema.registrarTramo(1.52, 1.221, 1.54, 1.25, 3);
+		assertEquals(retornoRegistrarTramo_C_E.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_D_E = sistema.registrarTramo(1.53, 1.24, 1.54, 1.25, 2);
+		assertEquals(retornoRegistrarTramo_D_E.resultado, Retorno.Resultado.OK);
+						
+		//Cuento los tramos (deben ser el doble de la cantidad de esquinas porque son bidireccionales)
+		assertEquals(10,sistema.getListaTramos().largo());
+				
+		//Registro movil uno
+		Retorno retornoMovilUno = sistema.registrarMovil("ABC1234", "46110887");
+		assertEquals(retornoMovilUno.resultado, Retorno.Resultado.OK);
+				
+		//Lo asigno a la esquina mas cercana (sin ser la del parametro)
+		Retorno retornoAsignacionUno = sistema.asignarUbicacionMovil("ABC1234", 1.51, 1.21);
+		assertEquals(retornoAsignacionUno.resultado, Retorno.Resultado.OK);
 		
+		//Registro movil dos
+		Retorno retornoMovilDos = sistema.registrarMovil("BCD2345", "43553319");
+		assertEquals(retornoMovilDos.resultado, Retorno.Resultado.OK);
+						
+		//Lo asigno a la esquina mas lejana
+		Retorno retornoAsignacionDos = sistema.asignarUbicacionMovil("BCD2345", 1.54, 1.25);
+		assertEquals(retornoAsignacionDos.resultado, Retorno.Resultado.OK);
+				
+		//Busco el movil mas cercano a la esquina uno
+		Retorno retornoMovilMasCercano = sistema.movilMasCercano(1.555, 1.222);
+		assertEquals(retornoMovilMasCercano.resultado, Retorno.Resultado.OK);
+						
+		//Compruebo que ademas de devolverme el Retorno que esperaba, 
+		//EL MOVIL QUE ME DEVOLVIO ES EL QUE YO SE QUE ESTA MAS CERCA. Y NO OTRO.
+		assertEquals("ABC1234;1;46110887", Sistema.mensaje_movilMasCercano);
 	}
 	
 	@Test
 	public void movilMasCercano_esquinaMasLejanaRespectoParametro() {
-		
+		//Creo el sistema
+		Sistema sistema = new Sistema();
+		sistema.inicializarSistema(5);
+								
+		//Registro 5 esquinas
+		Retorno retornoRegistrarEsquinaUno = sistema.registrarEsquina(1.555, 1.222);
+		assertEquals(retornoRegistrarEsquinaUno.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaDos = sistema.registrarEsquina(1.51, 1.21);
+		assertEquals(retornoRegistrarEsquinaDos.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaTres = sistema.registrarEsquina(1.52, 1.221);
+		assertEquals(retornoRegistrarEsquinaTres.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCuatro = sistema.registrarEsquina(1.53, 1.24);
+		assertEquals(retornoRegistrarEsquinaCuatro.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCinco = sistema.registrarEsquina(1.54, 1.25);
+		assertEquals(retornoRegistrarEsquinaCinco.resultado, Retorno.Resultado.OK);
+								
+		//Cuento las esquinas del sistema
+		assertEquals(5,sistema.getListaEsquinas().largo());
+								
+		//Registro los tramos
+		Retorno retornoRegistrarTramo_A_B = sistema.registrarTramo(1.555, 1.222, 1.51, 1.21, 1);
+		assertEquals(retornoRegistrarTramo_A_B.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_A_D = sistema.registrarTramo(1.555, 1.222, 1.53, 1.24, 5);
+		assertEquals(retornoRegistrarTramo_A_D.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_B_C = sistema.registrarTramo(1.51, 1.21, 1.52, 1.221, 2);
+		assertEquals(retornoRegistrarTramo_B_C.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_C_E = sistema.registrarTramo(1.52, 1.221, 1.54, 1.25, 3);
+		assertEquals(retornoRegistrarTramo_C_E.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_D_E = sistema.registrarTramo(1.53, 1.24, 1.54, 1.25, 2);
+		assertEquals(retornoRegistrarTramo_D_E.resultado, Retorno.Resultado.OK);
+								
+		//Cuento los tramos (deben ser el doble de la cantidad de esquinas porque son bidireccionales)
+		assertEquals(10,sistema.getListaTramos().largo());
+				
+		//Registro movil unico
+		Retorno retornoMovilDos = sistema.registrarMovil("ABC1234", "46110887");
+		assertEquals(retornoMovilDos.resultado, Retorno.Resultado.OK);
+								
+		//Lo asigno a la esquina mas lejana
+		Retorno retornoAsignacionDos = sistema.asignarUbicacionMovil("ABC1234", 1.54, 1.25);
+		assertEquals(retornoAsignacionDos.resultado, Retorno.Resultado.OK);
+						
+		//Busco el movil mas cercano a la esquina uno
+		Retorno retornoMovilMasCercano = sistema.movilMasCercano(1.555, 1.222);
+		assertEquals(retornoMovilMasCercano.resultado, Retorno.Resultado.OK);
+								
+		//Compruebo que ademas de devolverme el Retorno que esperaba, 
+		//EL MOVIL QUE ME DEVOLVIO ES EL QUE YO SE QUE ESTA MAS CERCA. Y NO OTRO.
+		assertEquals("ABC1234;6;46110887", Sistema.mensaje_movilMasCercano);
 	}
 	
 	@Test
 	public void movilMasCercano_dosMovilesEnDiferentesEsquinasPeroMismaDistancia() {
+		//Creo el sistema
+		Sistema sistema = new Sistema();
+		sistema.inicializarSistema(5);
+						
+		//Registro 5 esquinas
+		Retorno retornoRegistrarEsquinaUno = sistema.registrarEsquina(1.555, 1.222);
+		assertEquals(retornoRegistrarEsquinaUno.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaDos = sistema.registrarEsquina(1.51, 1.21);
+		assertEquals(retornoRegistrarEsquinaDos.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaTres = sistema.registrarEsquina(1.52, 1.221);
+		assertEquals(retornoRegistrarEsquinaTres.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCuatro = sistema.registrarEsquina(1.53, 1.24);
+		assertEquals(retornoRegistrarEsquinaCuatro.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCinco = sistema.registrarEsquina(1.54, 1.25);
+		assertEquals(retornoRegistrarEsquinaCinco.resultado, Retorno.Resultado.OK);
+						
+		//Cuento las esquinas del sistema
+		assertEquals(5,sistema.getListaEsquinas().largo());
+						
+		//Registro los tramos
+		Retorno retornoRegistrarTramo_A_B = sistema.registrarTramo(1.555, 1.222, 1.51, 1.21, 1);
+		assertEquals(retornoRegistrarTramo_A_B.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_A_D = sistema.registrarTramo(1.555, 1.222, 1.53, 1.24, 3);
+		assertEquals(retornoRegistrarTramo_A_D.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_B_C = sistema.registrarTramo(1.51, 1.21, 1.52, 1.221, 2);
+		assertEquals(retornoRegistrarTramo_B_C.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_C_E = sistema.registrarTramo(1.52, 1.221, 1.54, 1.25, 3);
+		assertEquals(retornoRegistrarTramo_C_E.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_D_E = sistema.registrarTramo(1.53, 1.24, 1.54, 1.25, 2);
+		assertEquals(retornoRegistrarTramo_D_E.resultado, Retorno.Resultado.OK);
+						
+		//Cuento los tramos (deben ser el doble de la cantidad de esquinas porque son bidireccionales)
+		assertEquals(10,sistema.getListaTramos().largo());
+				
+		//Registro movil uno
+		Retorno retornoMovilUno = sistema.registrarMovil("ABC1234", "46110887");
+		assertEquals(retornoMovilUno.resultado, Retorno.Resultado.OK);
+				
+		//Lo asigno a la esquina C
+		Retorno retornoAsignacionUno = sistema.asignarUbicacionMovil("ABC1234", 1.51, 1.21);
+		assertEquals(retornoAsignacionUno.resultado, Retorno.Resultado.OK);
 		
+		//Registro movil dos
+		Retorno retornoMovilDos = sistema.registrarMovil("BCD2345", "43553319");
+		assertEquals(retornoMovilDos.resultado, Retorno.Resultado.OK);
+						
+		//Lo asigno a la esquina D
+		Retorno retornoAsignacionDos = sistema.asignarUbicacionMovil("BCD2345", 1.54, 1.25);
+		assertEquals(retornoAsignacionDos.resultado, Retorno.Resultado.OK);
+				
+		//Busco el movil mas cercano a la esquina uno
+		Retorno retornoMovilMasCercano = sistema.movilMasCercano(1.555, 1.222);
+		assertEquals(retornoMovilMasCercano.resultado, Retorno.Resultado.OK);
+						
+		//Compruebo que ademas de devolverme el Retorno que esperaba, 
+		//EL MOVIL QUE ME DEVOLVIO ES EL QUE YO SE QUE ESTA MAS CERCA. Y NO OTRO.
+		//EN ESTA PRUEBA, LOS DOS MOVILES ESTAN A LA MISMA DISTANCIA.
+		//LA RESOLUCION DE CUAL DEVUELVE, PODRIA SER POR UN SEGUNDO CRITERIO (MENOR CANTIDAD DE PASOS POR EJ)
+		assertEquals("ABC1234;3;46110887", Sistema.mensaje_movilMasCercano);
 	}
 	
 	@Test
 	public void movilMasCercano_unicoMovilEnEsquinaDelParametroPeroNoDisponible() {
+		//Creo el sistema
+		Sistema sistema = new Sistema();
+		sistema.inicializarSistema(5);
+										
+		//Registro 5 esquinas
+		Retorno retornoRegistrarEsquinaUno = sistema.registrarEsquina(1.555, 1.222);
+		assertEquals(retornoRegistrarEsquinaUno.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaDos = sistema.registrarEsquina(1.51, 1.21);
+		assertEquals(retornoRegistrarEsquinaDos.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaTres = sistema.registrarEsquina(1.52, 1.221);
+		assertEquals(retornoRegistrarEsquinaTres.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCuatro = sistema.registrarEsquina(1.53, 1.24);
+		assertEquals(retornoRegistrarEsquinaCuatro.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCinco = sistema.registrarEsquina(1.54, 1.25);
+		assertEquals(retornoRegistrarEsquinaCinco.resultado, Retorno.Resultado.OK);
+										
+		//Cuento las esquinas del sistema
+		assertEquals(5,sistema.getListaEsquinas().largo());
+										
+		//Registro los tramos
+		Retorno retornoRegistrarTramo_A_B = sistema.registrarTramo(1.555, 1.222, 1.51, 1.21, 1);
+		assertEquals(retornoRegistrarTramo_A_B.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_A_D = sistema.registrarTramo(1.555, 1.222, 1.53, 1.24, 5);
+		assertEquals(retornoRegistrarTramo_A_D.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_B_C = sistema.registrarTramo(1.51, 1.21, 1.52, 1.221, 2);
+		assertEquals(retornoRegistrarTramo_B_C.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_C_E = sistema.registrarTramo(1.52, 1.221, 1.54, 1.25, 3);
+		assertEquals(retornoRegistrarTramo_C_E.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_D_E = sistema.registrarTramo(1.53, 1.24, 1.54, 1.25, 2);
+		assertEquals(retornoRegistrarTramo_D_E.resultado, Retorno.Resultado.OK);
+										
+		//Cuento los tramos (deben ser el doble de la cantidad de esquinas porque son bidireccionales)
+		assertEquals(10,sistema.getListaTramos().largo());
+						
+		//Registro movil unico
+		Retorno retornoMovilDos = sistema.registrarMovil("ABC1234", "46110887");
+		assertEquals(retornoMovilDos.resultado, Retorno.Resultado.OK);
+										
+		//Lo asigno a la esquina mas lejana
+		Retorno retornoAsignacionDos = sistema.asignarUbicacionMovil("ABC1234", 1.54, 1.25);
+		assertEquals(retornoAsignacionDos.resultado, Retorno.Resultado.OK);
 		
-	}
-	
-	@Test
-	public void movilMasCercano_movilEnEsquinaDelParametroPeroNoDisponible_retornaSiguiente() {
-		
-	}
-	
-	@Test
-	public void movilMasCercano_movilLejosDeEsquinaDelParametroNoDisponible_retornaSiguiente() {
-		
+		//Lo deshabilito para asegurar que si no hay moviles disponibles, no me traiga nada
+		Movil movil = sistema.getMovilByMatricula("ABC1234");
+		movil.setEstadoMovil(EstadoMovil.DESHABILITADO);
+								
+		//Busco el movil mas cercano a la esquina uno
+		Retorno retornoMovilMasCercano = sistema.movilMasCercano(1.555, 1.222);
+		assertEquals(retornoMovilMasCercano.resultado, Retorno.Resultado.OK);
+										
+		//Compruebo que ademas de devolverme el Retorno que esperaba, 
+		//EL MOVIL QUE ME DEVOLVIO ES EL QUE YO SE QUE ESTA MAS CERCA. Y NO OTRO.
+		assertEquals("", Sistema.mensaje_movilMasCercano);
 	}
 	
 	@Test
 	public void movilMasCercano_errorUno() {
+		//Creo el sistema
+		Sistema sistema = new Sistema();
+		sistema.inicializarSistema(5);
 		
+		//Busco el movil mas cercano, pasandole una esquina que no existe
+		Retorno retornoMovilMasCercano = sistema.movilMasCercano(1.555, 1.222);
+		assertEquals(retornoMovilMasCercano.resultado, Retorno.Resultado.ERROR_1);
+		assertEquals("", Sistema.mensaje_movilMasCercano);
 	}
-	*/
 	
+	@Test
+	public void movilMasCercano_movilLejosDeEsquinaDelParametroNoDisponible_retornaSiguiente() {
+		//Creo el sistema
+		Sistema sistema = new Sistema();
+		sistema.inicializarSistema(5);
+								
+		//Registro 5 esquinas
+		Retorno retornoRegistrarEsquinaUno = sistema.registrarEsquina(1.555, 1.222);
+		assertEquals(retornoRegistrarEsquinaUno.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaDos = sistema.registrarEsquina(1.51, 1.21);
+		assertEquals(retornoRegistrarEsquinaDos.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaTres = sistema.registrarEsquina(1.52, 1.221);
+		assertEquals(retornoRegistrarEsquinaTres.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCuatro = sistema.registrarEsquina(1.53, 1.24);
+		assertEquals(retornoRegistrarEsquinaCuatro.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCinco = sistema.registrarEsquina(1.54, 1.25);
+		assertEquals(retornoRegistrarEsquinaCinco.resultado, Retorno.Resultado.OK);
+								
+		//Cuento las esquinas del sistema
+		assertEquals(5,sistema.getListaEsquinas().largo());
+								
+		//Registro los tramos
+		Retorno retornoRegistrarTramo_A_B = sistema.registrarTramo(1.555, 1.222, 1.51, 1.21, 1);
+		assertEquals(retornoRegistrarTramo_A_B.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_A_D = sistema.registrarTramo(1.555, 1.222, 1.53, 1.24, 3);
+		assertEquals(retornoRegistrarTramo_A_D.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_B_C = sistema.registrarTramo(1.51, 1.21, 1.52, 1.221, 2);
+		assertEquals(retornoRegistrarTramo_B_C.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_C_E = sistema.registrarTramo(1.52, 1.221, 1.54, 1.25, 3);
+		assertEquals(retornoRegistrarTramo_C_E.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_D_E = sistema.registrarTramo(1.53, 1.24, 1.54, 1.25, 2);
+		assertEquals(retornoRegistrarTramo_D_E.resultado, Retorno.Resultado.OK);
+								
+		//Cuento los tramos (deben ser el doble de la cantidad de esquinas porque son bidireccionales)
+		assertEquals(10,sistema.getListaTramos().largo());
+						
+		//Registro movil uno
+		Retorno retornoMovilUno = sistema.registrarMovil("ABC1234", "46110887");
+		assertEquals(retornoMovilUno.resultado, Retorno.Resultado.OK);
+						
+		//Lo asigno a la esquina B
+		Retorno retornoAsignacionUno = sistema.asignarUbicacionMovil("ABC1234", 1.51, 1.21);
+		assertEquals(retornoAsignacionUno.resultado, Retorno.Resultado.OK);
+				
+		//Lo deshabilito para probar que no me trae este movil
+		Movil movilDos = sistema.getMovilByMatricula("ABC1234");
+		movilDos.setEstadoMovil(EstadoMovil.DESHABILITADO);
+				
+		//Registro movil dos
+		Retorno retornoMovilDos = sistema.registrarMovil("BCD2345", "43553319");
+		assertEquals(retornoMovilDos.resultado, Retorno.Resultado.OK);
+								
+		//Lo asigno a la esquina E
+		Retorno retornoAsignacionDos = sistema.asignarUbicacionMovil("BCD2345", 1.54, 1.25);
+		assertEquals(retornoAsignacionDos.resultado, Retorno.Resultado.OK);
+						
+		//Busco el movil mas cercano a la esquina uno
+		Retorno retornoMovilMasCercano = sistema.movilMasCercano(1.555, 1.222);
+		assertEquals(retornoMovilMasCercano.resultado, Retorno.Resultado.OK);
+								
+		//Compruebo que ademas de devolverme el Retorno que esperaba, 
+		//EL MOVIL QUE ME DEVOLVIO ES EL QUE YO SE QUE ESTA MAS CERCA. Y NO OTRO.
+		//EN ESTA PRUEBA, EL MOVIL ABC1234 ESTA MAS CERCA, PERO DESHABILITADO. ASI QUE ME TIENE QUE DEVOLVER EL OTRO
+		assertEquals("BCD2345;6;43553319", Sistema.mensaje_movilMasCercano);
+	}
 	
+	@Test
+	public void movilMasCercano_movilEnEsquinaDelParametroPeroNoDisponible_retornaSiguiente() {
+		//Creo el sistema
+		Sistema sistema = new Sistema();
+		sistema.inicializarSistema(5);
+										
+		//Registro 5 esquinas
+		Retorno retornoRegistrarEsquinaUno = sistema.registrarEsquina(1.555, 1.222);
+		assertEquals(retornoRegistrarEsquinaUno.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaDos = sistema.registrarEsquina(1.51, 1.21);
+		assertEquals(retornoRegistrarEsquinaDos.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaTres = sistema.registrarEsquina(1.52, 1.221);
+		assertEquals(retornoRegistrarEsquinaTres.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCuatro = sistema.registrarEsquina(1.53, 1.24);
+		assertEquals(retornoRegistrarEsquinaCuatro.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCinco = sistema.registrarEsquina(1.54, 1.25);
+		assertEquals(retornoRegistrarEsquinaCinco.resultado, Retorno.Resultado.OK);
+										
+		//Cuento las esquinas del sistema
+		assertEquals(5,sistema.getListaEsquinas().largo());
+										
+		//Registro los tramos
+		Retorno retornoRegistrarTramo_A_B = sistema.registrarTramo(1.555, 1.222, 1.51, 1.21, 1);
+		assertEquals(retornoRegistrarTramo_A_B.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_A_D = sistema.registrarTramo(1.555, 1.222, 1.53, 1.24, 3);
+		assertEquals(retornoRegistrarTramo_A_D.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_B_C = sistema.registrarTramo(1.51, 1.21, 1.52, 1.221, 2);
+		assertEquals(retornoRegistrarTramo_B_C.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_C_E = sistema.registrarTramo(1.52, 1.221, 1.54, 1.25, 3);
+		assertEquals(retornoRegistrarTramo_C_E.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_D_E = sistema.registrarTramo(1.53, 1.24, 1.54, 1.25, 2);
+		assertEquals(retornoRegistrarTramo_D_E.resultado, Retorno.Resultado.OK);
+										
+		//Cuento los tramos (deben ser el doble de la cantidad de esquinas porque son bidireccionales)
+		assertEquals(10,sistema.getListaTramos().largo());
+								
+		//Registro movil uno
+		Retorno retornoMovilUno = sistema.registrarMovil("ABC1234", "46110887");
+		assertEquals(retornoMovilUno.resultado, Retorno.Resultado.OK);
+								
+		//Lo asigno a la esquina A
+		Retorno retornoAsignacionUno = sistema.asignarUbicacionMovil("ABC1234", 1.555, 1.222);
+		assertEquals(retornoAsignacionUno.resultado, Retorno.Resultado.OK);
+						
+		//Lo deshabilito para probar que no me trae este movil
+		Movil movilDos = sistema.getMovilByMatricula("ABC1234");
+		movilDos.setEstadoMovil(EstadoMovil.DESHABILITADO);
+						
+		//Registro movil dos
+		Retorno retornoMovilDos = sistema.registrarMovil("BCD2345", "43553319");
+		assertEquals(retornoMovilDos.resultado, Retorno.Resultado.OK);
+										
+		//Lo asigno a la esquina E
+		Retorno retornoAsignacionDos = sistema.asignarUbicacionMovil("BCD2345", 1.54, 1.25);
+		assertEquals(retornoAsignacionDos.resultado, Retorno.Resultado.OK);
+								
+		//Busco el movil mas cercano a la esquina uno
+		Retorno retornoMovilMasCercano = sistema.movilMasCercano(1.555, 1.222);
+		assertEquals(retornoMovilMasCercano.resultado, Retorno.Resultado.OK);
+										
+		//Compruebo que ademas de devolverme el Retorno que esperaba, 
+		//EL MOVIL QUE ME DEVOLVIO ES EL QUE YO SE QUE ESTA MAS CERCA. Y NO OTRO.
+		//EN ESTA PRUEBA, EL MOVIL ABC1234 ESTA MAS CERCA, PERO DESHABILITADO. ASI QUE ME TIENE QUE DEVOLVER EL OTRO
+		assertEquals("BCD2345;6;43553319", Sistema.mensaje_movilMasCercano);
+	}
+
+	@Test
+	public void movilEnRadio_radioMenorQueCero() {
+		//Creo el sistema
+		Sistema sistema = new Sistema();
+		sistema.inicializarSistema(5);
+		
+		//Registro 5 esquinas
+		Retorno retornoRegistrarEsquinaUno = sistema.registrarEsquina(1.555, 1.222);
+		assertEquals(retornoRegistrarEsquinaUno.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaDos = sistema.registrarEsquina(1.51, 1.21);
+		assertEquals(retornoRegistrarEsquinaDos.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaTres = sistema.registrarEsquina(1.52, 1.221);
+		assertEquals(retornoRegistrarEsquinaTres.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCuatro = sistema.registrarEsquina(1.53, 1.24);
+		assertEquals(retornoRegistrarEsquinaCuatro.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCinco = sistema.registrarEsquina(1.54, 1.25);
+		assertEquals(retornoRegistrarEsquinaCinco.resultado, Retorno.Resultado.OK);
+		
+		//Cuento las esquinas del sistema
+		assertEquals(5,sistema.getListaEsquinas().largo());
+		
+		//Registro los tramos
+		Retorno retornoRegistrarTramo_A_B = sistema.registrarTramo(1.555, 1.222, 1.51, 1.21, 1);
+		assertEquals(retornoRegistrarTramo_A_B.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_A_D = sistema.registrarTramo(1.555, 1.222, 1.53, 1.24, 5);
+		assertEquals(retornoRegistrarTramo_A_D.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_B_C = sistema.registrarTramo(1.51, 1.21, 1.52, 1.221, 2);
+		assertEquals(retornoRegistrarTramo_B_C.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_C_E = sistema.registrarTramo(1.52, 1.221, 1.54, 1.25, 3);
+		assertEquals(retornoRegistrarTramo_C_E.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_D_E = sistema.registrarTramo(1.53, 1.24, 1.54, 1.25, 2);
+		assertEquals(retornoRegistrarTramo_D_E.resultado, Retorno.Resultado.OK);
+		
+		//Cuento los tramos (deben ser el doble de la cantidad de esquinas porque son bidireccionales)
+		assertEquals(10,sistema.getListaTramos().largo());
+		
+		//Registro movil uno
+		Retorno retornoMovilUno = sistema.registrarMovil("ABC1234", "46110887");
+		assertEquals(retornoMovilUno.resultado, Retorno.Resultado.OK);
+										
+		//Lo asigno a la esquina B
+		Retorno retornoAsignacionUno = sistema.asignarUbicacionMovil("ABC1234", 1.51, 1.21);
+		assertEquals(retornoAsignacionUno.resultado, Retorno.Resultado.OK);
+				
+		//Busco el movil mas cercano marcando el radio como -10
+		Retorno retornoMovilMasCercano = sistema.verMovilesEnRadio(1.555, 1.222, -10);
+		assertEquals(retornoMovilMasCercano.resultado, Retorno.Resultado.ERROR_1);
+		
+		//Compruebo que ademas de devolverme el Retorno que esperaba, 
+		//EL/LOS MOVILES QUE ME DEVOLVIO, SON LOS QUE YO SE QUE CORRESPONDEN. NI UNO MAS NI UNO MENOS.
+		assertEquals("", Sistema.mensaje_movilesEnRadio);
+	}
+	
+	@Test
+	public void movilEnRadio_radioCero() {
+		//Creo el sistema
+		Sistema sistema = new Sistema();
+		sistema.inicializarSistema(5);
+		
+		//Registro 5 esquinas
+		Retorno retornoRegistrarEsquinaUno = sistema.registrarEsquina(1.555, 1.222);
+		assertEquals(retornoRegistrarEsquinaUno.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaDos = sistema.registrarEsquina(1.51, 1.21);
+		assertEquals(retornoRegistrarEsquinaDos.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaTres = sistema.registrarEsquina(1.52, 1.221);
+		assertEquals(retornoRegistrarEsquinaTres.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCuatro = sistema.registrarEsquina(1.53, 1.24);
+		assertEquals(retornoRegistrarEsquinaCuatro.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCinco = sistema.registrarEsquina(1.54, 1.25);
+		assertEquals(retornoRegistrarEsquinaCinco.resultado, Retorno.Resultado.OK);
+		
+		//Cuento las esquinas del sistema
+		assertEquals(5,sistema.getListaEsquinas().largo());
+		
+		//Registro los tramos
+		Retorno retornoRegistrarTramo_A_B = sistema.registrarTramo(1.555, 1.222, 1.51, 1.21, 1);
+		assertEquals(retornoRegistrarTramo_A_B.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_A_D = sistema.registrarTramo(1.555, 1.222, 1.53, 1.24, 5);
+		assertEquals(retornoRegistrarTramo_A_D.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_B_C = sistema.registrarTramo(1.51, 1.21, 1.52, 1.221, 2);
+		assertEquals(retornoRegistrarTramo_B_C.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_C_E = sistema.registrarTramo(1.52, 1.221, 1.54, 1.25, 3);
+		assertEquals(retornoRegistrarTramo_C_E.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_D_E = sistema.registrarTramo(1.53, 1.24, 1.54, 1.25, 2);
+		assertEquals(retornoRegistrarTramo_D_E.resultado, Retorno.Resultado.OK);
+		
+		//Cuento los tramos (deben ser el doble de la cantidad de esquinas porque son bidireccionales)
+		assertEquals(10,sistema.getListaTramos().largo());
+		
+		//Registro movil uno
+		Retorno retornoMovilUno = sistema.registrarMovil("ABC1234", "46110887");
+		assertEquals(retornoMovilUno.resultado, Retorno.Resultado.OK);
+										
+		//Lo asigno a la esquina B
+		Retorno retornoAsignacionUno = sistema.asignarUbicacionMovil("ABC1234", 1.51, 1.21);
+		assertEquals(retornoAsignacionUno.resultado, Retorno.Resultado.OK);
+				
+		//Busco el movil mas cercano marcando el radio como -10
+		Retorno retornoMovilMasCercano = sistema.verMovilesEnRadio(1.555, 1.222, 0);
+		assertEquals(retornoMovilMasCercano.resultado, Retorno.Resultado.ERROR_1);
+		
+		//Compruebo que ademas de devolverme el Retorno que esperaba, 
+		//EL/LOS MOVILES QUE ME DEVOLVIO, SON LOS QUE YO SE QUE CORRESPONDEN. NI UNO MAS NI UNO MENOS.
+		assertEquals("", Sistema.mensaje_movilesEnRadio);
+	}
+	
+	@Test
+	public void movilEnRadio_noExisteEsquina() {
+		//Creo el sistema
+		Sistema sistema = new Sistema();
+		sistema.inicializarSistema(5);
+				
+		//Busco el movil mas cercano pasando una esquina inexistente
+		Retorno retornoMovilMasCercano = sistema.verMovilesEnRadio(1.555, 1.222, 100);
+		assertEquals(retornoMovilMasCercano.resultado, Retorno.Resultado.ERROR_2);
+		
+		//Compruebo que ademas de devolverme el Retorno que esperaba, 
+		//EL/LOS MOVILES QUE ME DEVOLVIO, SON LOS QUE YO SE QUE CORRESPONDEN. NI UNO MAS NI UNO MENOS.
+		assertEquals("", Sistema.mensaje_movilesEnRadio);
+	}
+	
+	@Test
+	public void movilEnRadio_unMovilFueraDelRadio() {
+		//Creo el sistema
+		Sistema sistema = new Sistema();
+		sistema.inicializarSistema(5);
+		
+		//Registro 5 esquinas
+		Retorno retornoRegistrarEsquinaUno = sistema.registrarEsquina(1.555, 1.222);
+		assertEquals(retornoRegistrarEsquinaUno.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaDos = sistema.registrarEsquina(1.51, 1.21);
+		assertEquals(retornoRegistrarEsquinaDos.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaTres = sistema.registrarEsquina(1.52, 1.221);
+		assertEquals(retornoRegistrarEsquinaTres.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCuatro = sistema.registrarEsquina(1.53, 1.24);
+		assertEquals(retornoRegistrarEsquinaCuatro.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCinco = sistema.registrarEsquina(1.54, 1.25);
+		assertEquals(retornoRegistrarEsquinaCinco.resultado, Retorno.Resultado.OK);
+		
+		//Cuento las esquinas del sistema
+		assertEquals(5,sistema.getListaEsquinas().largo());
+		
+		//Registro los tramos
+		Retorno retornoRegistrarTramo_A_B = sistema.registrarTramo(1.555, 1.222, 1.51, 1.21, 1);
+		assertEquals(retornoRegistrarTramo_A_B.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_A_D = sistema.registrarTramo(1.555, 1.222, 1.53, 1.24, 5);
+		assertEquals(retornoRegistrarTramo_A_D.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_B_C = sistema.registrarTramo(1.51, 1.21, 1.52, 1.221, 2);
+		assertEquals(retornoRegistrarTramo_B_C.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_C_E = sistema.registrarTramo(1.52, 1.221, 1.54, 1.25, 3);
+		assertEquals(retornoRegistrarTramo_C_E.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_D_E = sistema.registrarTramo(1.53, 1.24, 1.54, 1.25, 2);
+		assertEquals(retornoRegistrarTramo_D_E.resultado, Retorno.Resultado.OK);
+		
+		//Cuento los tramos (deben ser el doble de la cantidad de esquinas porque son bidireccionales)
+		assertEquals(10,sistema.getListaTramos().largo());
+		
+		//Registro movil uno
+		Retorno retornoMovilUno = sistema.registrarMovil("ABC1234", "46110887");
+		assertEquals(retornoMovilUno.resultado, Retorno.Resultado.OK);
+										
+		//Lo asigno a la esquina D
+		Retorno retornoAsignacionUno = sistema.asignarUbicacionMovil("ABC1234", 1.54, 1.25);
+		assertEquals(retornoAsignacionUno.resultado, Retorno.Resultado.OK);
+				
+		//Busco el movil mas cercano con radio corto
+		Retorno retornoMovilMasCercano = sistema.verMovilesEnRadio(1.555, 1.222, 3);
+		assertEquals(retornoMovilMasCercano.resultado, Retorno.Resultado.OK);
+		
+		//Compruebo que ademas de devolverme el Retorno que esperaba, 
+		//EL/LOS MOVILES QUE ME DEVOLVIO, SON LOS QUE YO SE QUE CORRESPONDEN. NI UNO MAS NI UNO MENOS.
+		assertEquals("", Sistema.mensaje_movilesEnRadio);
+	}
+	
+	@Test
+	public void movilEnRadio_noHayMoviles() {
+		//Creo el sistema
+		Sistema sistema = new Sistema();
+		sistema.inicializarSistema(5);
+		
+		//Registro 5 esquinas
+		Retorno retornoRegistrarEsquinaUno = sistema.registrarEsquina(1.555, 1.222);
+		assertEquals(retornoRegistrarEsquinaUno.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaDos = sistema.registrarEsquina(1.51, 1.21);
+		assertEquals(retornoRegistrarEsquinaDos.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaTres = sistema.registrarEsquina(1.52, 1.221);
+		assertEquals(retornoRegistrarEsquinaTres.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCuatro = sistema.registrarEsquina(1.53, 1.24);
+		assertEquals(retornoRegistrarEsquinaCuatro.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCinco = sistema.registrarEsquina(1.54, 1.25);
+		assertEquals(retornoRegistrarEsquinaCinco.resultado, Retorno.Resultado.OK);
+		
+		//Cuento las esquinas del sistema
+		assertEquals(5,sistema.getListaEsquinas().largo());
+		
+		//Registro los tramos
+		Retorno retornoRegistrarTramo_A_B = sistema.registrarTramo(1.555, 1.222, 1.51, 1.21, 1);
+		assertEquals(retornoRegistrarTramo_A_B.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_A_D = sistema.registrarTramo(1.555, 1.222, 1.53, 1.24, 5);
+		assertEquals(retornoRegistrarTramo_A_D.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_B_C = sistema.registrarTramo(1.51, 1.21, 1.52, 1.221, 2);
+		assertEquals(retornoRegistrarTramo_B_C.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_C_E = sistema.registrarTramo(1.52, 1.221, 1.54, 1.25, 3);
+		assertEquals(retornoRegistrarTramo_C_E.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_D_E = sistema.registrarTramo(1.53, 1.24, 1.54, 1.25, 2);
+		assertEquals(retornoRegistrarTramo_D_E.resultado, Retorno.Resultado.OK);
+		
+		//Cuento los tramos (deben ser el doble de la cantidad de esquinas porque son bidireccionales)
+		assertEquals(10,sistema.getListaTramos().largo());
+		
+		//Busco el movil mas cercano a la esquina uno (sin haber registrado moviles)
+		Retorno retornoMovilMasCercano = sistema.movilMasCercano(1.555, 1.222);
+		assertEquals(retornoMovilMasCercano.resultado, Retorno.Resultado.OK);
+		
+		//Compruebo que ademas de devolverme el Retorno que esperaba, 
+		//EL MOVIL QUE ME DEVOLVIO ES EL QUE YO SE QUE ESTA MAS CERCA. Y NO OTRO.
+		assertEquals("", Sistema.mensaje_movilMasCercano);
+	}
+	
+	@Test
+	public void movilEnRadio_returnUnMovil(){
+		//Creo el sistema
+		Sistema sistema = new Sistema();
+		sistema.inicializarSistema(5);
+		
+		//Registro 5 esquinas
+		Retorno retornoRegistrarEsquinaUno = sistema.registrarEsquina(1.555, 1.222);
+		assertEquals(retornoRegistrarEsquinaUno.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaDos = sistema.registrarEsquina(1.51, 1.21);
+		assertEquals(retornoRegistrarEsquinaDos.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaTres = sistema.registrarEsquina(1.52, 1.221);
+		assertEquals(retornoRegistrarEsquinaTres.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCuatro = sistema.registrarEsquina(1.53, 1.24);
+		assertEquals(retornoRegistrarEsquinaCuatro.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCinco = sistema.registrarEsquina(1.54, 1.25);
+		assertEquals(retornoRegistrarEsquinaCinco.resultado, Retorno.Resultado.OK);
+		
+		//Cuento las esquinas del sistema
+		assertEquals(5,sistema.getListaEsquinas().largo());
+		
+		//Registro los tramos
+		Retorno retornoRegistrarTramo_A_B = sistema.registrarTramo(1.555, 1.222, 1.51, 1.21, 1);
+		assertEquals(retornoRegistrarTramo_A_B.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_A_D = sistema.registrarTramo(1.555, 1.222, 1.53, 1.24, 5);
+		assertEquals(retornoRegistrarTramo_A_D.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_B_C = sistema.registrarTramo(1.51, 1.21, 1.52, 1.221, 2);
+		assertEquals(retornoRegistrarTramo_B_C.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_C_E = sistema.registrarTramo(1.52, 1.221, 1.54, 1.25, 3);
+		assertEquals(retornoRegistrarTramo_C_E.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_D_E = sistema.registrarTramo(1.53, 1.24, 1.54, 1.25, 2);
+		assertEquals(retornoRegistrarTramo_D_E.resultado, Retorno.Resultado.OK);
+		
+		//Cuento los tramos (deben ser el doble de la cantidad de esquinas porque son bidireccionales)
+		assertEquals(10,sistema.getListaTramos().largo());
+		
+		//Registro movil uno
+		Retorno retornoMovilUno = sistema.registrarMovil("ABC1234", "46110887");
+		assertEquals(retornoMovilUno.resultado, Retorno.Resultado.OK);
+										
+		//Lo asigno a la esquina B
+		Retorno retornoAsignacionUno = sistema.asignarUbicacionMovil("ABC1234", 1.51, 1.21);
+		assertEquals(retornoAsignacionUno.resultado, Retorno.Resultado.OK);
+				
+		//Busco el movil mas cercano con radio generoso
+		Retorno retornoMovilMasCercano = sistema.verMovilesEnRadio(1.555, 1.222, 100);
+		assertEquals(retornoMovilMasCercano.resultado, Retorno.Resultado.OK);
+		
+		//Compruebo que ademas de devolverme el Retorno que esperaba, 
+		//EL/LOS MOVILES QUE ME DEVOLVIO, SON LOS QUE YO SE QUE CORRESPONDEN. NI UNO MAS NI UNO MENOS.
+		assertEquals("ABC1234;1;46110887", Sistema.mensaje_movilesEnRadio);
+	}
+
+	@Test
+	public void movilEnRadio_returnMasDeUnMovil(){
+		//Creo el sistema
+		Sistema sistema = new Sistema();
+		sistema.inicializarSistema(5);
+				
+		//Registro 5 esquinas
+		Retorno retornoRegistrarEsquinaUno = sistema.registrarEsquina(1.555, 1.222);
+		assertEquals(retornoRegistrarEsquinaUno.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaDos = sistema.registrarEsquina(1.51, 1.21);
+		assertEquals(retornoRegistrarEsquinaDos.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaTres = sistema.registrarEsquina(1.52, 1.221);
+		assertEquals(retornoRegistrarEsquinaTres.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCuatro = sistema.registrarEsquina(1.53, 1.24);
+		assertEquals(retornoRegistrarEsquinaCuatro.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarEsquinaCinco = sistema.registrarEsquina(1.54, 1.25);
+		assertEquals(retornoRegistrarEsquinaCinco.resultado, Retorno.Resultado.OK);
+				
+		//Cuento las esquinas del sistema
+		assertEquals(5,sistema.getListaEsquinas().largo());
+				
+		//Registro los tramos
+		Retorno retornoRegistrarTramo_A_B = sistema.registrarTramo(1.555, 1.222, 1.51, 1.21, 1);
+		assertEquals(retornoRegistrarTramo_A_B.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_A_D = sistema.registrarTramo(1.555, 1.222, 1.53, 1.24, 5);
+		assertEquals(retornoRegistrarTramo_A_D.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_B_C = sistema.registrarTramo(1.51, 1.21, 1.52, 1.221, 2);
+		assertEquals(retornoRegistrarTramo_B_C.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_C_E = sistema.registrarTramo(1.52, 1.221, 1.54, 1.25, 3);
+		assertEquals(retornoRegistrarTramo_C_E.resultado, Retorno.Resultado.OK);
+		Retorno retornoRegistrarTramo_D_E = sistema.registrarTramo(1.53, 1.24, 1.54, 1.25, 2);
+		assertEquals(retornoRegistrarTramo_D_E.resultado, Retorno.Resultado.OK);
+				
+		//Cuento los tramos (deben ser el doble de la cantidad de esquinas porque son bidireccionales)
+		assertEquals(10,sistema.getListaTramos().largo());
+				
+		//Registro movil uno
+		Retorno retornoMovilUno = sistema.registrarMovil("ABC1234", "46110887");
+		assertEquals(retornoMovilUno.resultado, Retorno.Resultado.OK);
+												
+		//Lo asigno a la esquina B
+		Retorno retornoAsignacionUno = sistema.asignarUbicacionMovil("ABC1234", 1.51, 1.21);
+		assertEquals(retornoAsignacionUno.resultado, Retorno.Resultado.OK);
+		
+		//Registro movil dos
+		Retorno retornoMovilDos = sistema.registrarMovil("BCD2345", "43553319");
+		assertEquals(retornoMovilDos.resultado, Retorno.Resultado.OK);
+														
+		//Lo asigno a la esquina D
+		Retorno retornoAsignacionDos = sistema.asignarUbicacionMovil("BCD2345", 1.54, 1.25);
+		assertEquals(retornoAsignacionDos.resultado, Retorno.Resultado.OK);
+						
+		//Busco el movil mas cercano con radio generoso
+		Retorno retornoMovilMasCercano = sistema.verMovilesEnRadio(1.555, 1.222, 100);
+		assertEquals(retornoMovilMasCercano.resultado, Retorno.Resultado.OK);
+				
+		//Compruebo que ademas de devolverme el Retorno que esperaba, 
+		//EL/LOS MOVILES QUE ME DEVOLVIO, SON LOS QUE YO SE QUE CORRESPONDEN. NI UNO MAS NI UNO MENOS.
+		assertEquals("ABC1234;1;46110887 | BCD2345;6;43553319 |", Sistema.mensaje_movilesEnRadio);
+	}
 }
