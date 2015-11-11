@@ -366,10 +366,9 @@ public class Sistema implements ISistema {
 		int min = 999999;
 		int esquinaSig = -1;
 		int esquinaActual = esquina.getEsquinaId();
-		GrafoMatrizAdyacencia_impl grafo = new GrafoMatrizAdyacencia_impl(this.listaEsquinas.largo()+1);
+		GrafoMatrizAdyacencia_impl grafo = new GrafoMatrizAdyacencia_impl(this.listaEsquinas.largo());
 		DistanciaEsquina[][] caminos = new DistanciaEsquina[grafo.getCantNodos()+1][grafo.getCantNodos()+1];// [x]=idCiudad [y]=paso		
 		grafo.MatrizAdyacencia = this.GenerarMatrizAdy();
-		grafo.getNodosUsados()[esquinaActual]=true;
 		for (int numeroDePaso = 1; numeroDePaso < grafo.getCantNodos()+1; numeroDePaso++) {
 			for (int destino = 1; destino < grafo.getCantNodos()+1; destino++) {
 				if (grafo.MatrizAdyacencia[esquinaActual][destino] > 0) {// si hay camino, -1 = no adyacentes
@@ -377,11 +376,8 @@ public class Sistema implements ISistema {
 						grafo.getNodosUsados()[destino] = true;
 						DistanciaEsquina distanciaEsquina = new DistanciaEsquina();
 						distanciaEsquina.setIdEsquinaAnterior(esquinaActual);
-						if(numeroDePaso == 1){
-							distanciaEsquina.setDistanciaAcumulada(grafo.MatrizAdyacencia[esquinaActual][destino]);
-						}else{
-							distanciaEsquina.setDistanciaAcumulada(minimo.getDistanciaAcumulada()+ grafo.MatrizAdyacencia[esquinaActual][destino]);
-						}
+						distanciaEsquina.setDistanciaAcumulada(distanciaEsquina.getDistanciaAcumulada()
+																+ grafo.MatrizAdyacencia[esquinaActual][destino]);
 						DistanciaEsquina aux = caminos[destino][numeroDePaso - 1];
 						if (aux == null	|| aux.getDistanciaAcumulada() > distanciaEsquina.getDistanciaAcumulada()) {//comparo con la distancia del paso anterior al mismo destino
 							caminos[destino][numeroDePaso] = distanciaEsquina;	//si es menor la guardo				
@@ -391,13 +387,13 @@ public class Sistema implements ISistema {
 						if (min > caminos[destino][numeroDePaso].getDistanciaAcumulada()) {//me quedo con el de menor distancia de ese paso
 							minimo = new DistanciaEsquina();
 							minimo = caminos[destino][numeroDePaso];
-							min = minimo.getDistanciaAcumulada() ;
+							min = minimo.getDistanciaAcumulada();
 							esquinaSig = destino;
-						}							
-					}					
-				}				
+						}
+					}
+				}
 			}
-			esquinaActual = esquinaSig;		
+			esquinaActual = esquinaSig;			
 			min = 9999999;
 		}	
 		
@@ -409,7 +405,7 @@ public class Sistema implements ISistema {
 		int largo = this.listaEsquinas.largo()+1;
 		int x = 1;
 			
-		int[][] matriz = new int[largo+1][largo+1];
+		int[][] matriz = new int[largo][largo];
 		while (x < largo) {
 			int y = 1;	
 			while (y < largo) {
@@ -420,7 +416,6 @@ public class Sistema implements ISistema {
 				if (tramo != null) {
 					matriz[x][y] = tramo.getMetros();
 					matriz[y][x] = tramo.getMetros();
-					//matriz[x][y] = -1;
 				} else if (x == y) {
 					matriz[x][y] = 0;
 					matriz[y][x] = 0;
@@ -512,7 +507,7 @@ public class Sistema implements ISistema {
 	
 	public void imprimir(){
 		//provider prov = new provider();
-		Esquina esq = this.getEsquinaById(3);
+		Esquina esq = this.getEsquinaById(1);
 		DistanciaEsquina [][] dist= this.caminosMinimos(esq);
 		for(int x = 0 ;x < dist.length-1;x++){
 			for(int y = 0 ;y < dist[0].length-1;y++){
