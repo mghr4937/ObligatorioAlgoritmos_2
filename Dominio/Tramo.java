@@ -24,9 +24,8 @@ public class Tramo {
 		if (!(other instanceof Tramo))
 			return false;
 		Tramo that = (Tramo) other;
-		return (this.getEsquinaOrigen().equals(that.getEsquinaOrigen()) && 
-				this.getEsquinaDestino().equals(that.getEsquinaDestino()) || (this.getEsquinaOrigen().equals(that.getEsquinaDestino()) && 
-						this.getEsquinaDestino().equals(that.getEsquinaOrigen())));
+		return this.getEsquinaOrigen().equals(that.getEsquinaOrigen()) && 
+				this.getEsquinaDestino().equals(that.getEsquinaDestino());
 	}
 
 	@Override

@@ -25,5 +25,4 @@ public class Retorno {
 		this.valorEntero = valorEnt;
 		this.valorString = valorstr;
 	}
-
 }
