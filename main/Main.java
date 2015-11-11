@@ -7,45 +7,32 @@ public class Main {
 	public static void main(String[] args) {
 
 		Sistema sistema = new Sistema();
-		sistema.inicializarSistema(10);
-		// INSERTAR MOVIL
-		//sistema.registrarMovil("ABC 0002", "Conductor_Dos");
-		//sistema.registrarMovil("ABC 0001", "Conductor_Uno");
-		//sistema.registrarMovil("ABC 0003", "Conductor_Tres");
-
-		// DESHABILITAR MOVIL
-		//sistema.deshabilitarMovil("ABC 0002");
-		//sistema.deshabilitarMovil("ABC 0003");
-		//sistema.deshabilitarMovil("ABC 0001");
-
-		// HABILITAR MOVIL
-		//sistema.habilitarMovil("ABC 0001");
-		//sistema.habilitarMovil("ABC 0003");
-		//sistema.habilitarMovil("ABC 0002");
+		sistema.inicializarSistema(5);
 		
-		// BUSCAR MOVIL
-		//sistema.buscarMovil("ABC 0003");
-		//sistema.buscarMovil("ABC 0001");
-		//sistema.buscarMovil("ABC 0002");
-
-		// ELIMINAR MOVIL
-		//sistema.eliminarMovil("ABC 0002");
-		//sistema.eliminarMovil("ABC 0001");
-		//sistema.eliminarMovil("ABC 0003");
+		sistema.registrarEsquina(1.555, 1.222); // A
+		sistema.registrarEsquina(1.51, 1.21); // B
+		sistema.registrarEsquina(1.52, 1.221); // C
+		sistema.registrarEsquina(1.53, 1.24); // D
+		sistema.registrarEsquina(1.54, 1.25); // E
 		
+		sistema.registrarTramo(1.555, 1.222, 1.51, 1.21, 1); // A-B
+		sistema.registrarTramo(1.555, 1.222, 1.53, 1.24, 5); // A-D
+		sistema.registrarTramo(1.51, 1.21, 1.52, 1.221, 2); // B-C
+		sistema.registrarTramo( 1.52, 1.221, 1.54,1.25, 3); // C-D
+		sistema.registrarTramo( 1.53, 1.24, 1.54,1.25, 2); // D-E
 		
-		sistema.registrarEsquina(1.555, 1.222);//1 a
-		sistema.registrarEsquina(1.51, 1.21);//2  b
-		sistema.registrarEsquina(1.52, 1.221);//3 c
-		sistema.registrarEsquina(1.53, 1.24);//4 d
-		sistema.registrarEsquina(1.54, 1.25);//5 f
+		sistema.registrarMovil("ABC 0001", "Conductor_Uno");
+		sistema.registrarMovil("ABC 0002", "Conductor_Dos");
+		sistema.registrarMovil("ABC 0003", "Conductor_Tres");
+		sistema.registrarMovil("ABC 0004", "Conductor_Cuatro");
+		sistema.registrarMovil("ABC 0005", "Conductor_Cinco");
 		
-		sistema.registrarTramo(1.555, 1.222, 1.51, 1.21, 1); //a-b
-		sistema.registrarTramo(1.555, 1.222, 1.53, 1.24, 5);// a-d
-		sistema.registrarTramo(1.51, 1.21, 1.52, 1.221, 2);// b-c
-		sistema.registrarTramo( 1.52, 1.221, 1.54,1.25, 3);// c-f
-		sistema.registrarTramo( 1.53, 1.24, 1.54,1.25, 2);// d-f
+		sistema.asignarUbicacionMovil("ABC 0001", 1.555, 1.222);
+		sistema.asignarUbicacionMovil("ABC 0002", 1.51, 1.21);
+		sistema.asignarUbicacionMovil("ABC 0003", 1.52, 1.221);
+		sistema.asignarUbicacionMovil("ABC 0004", 1.53, 1.24);
+		sistema.asignarUbicacionMovil("ABC 0005", 1.54, 1.25);
 		
-		sistema.imprimir();
+		sistema.verMapa();
 	}
 }
