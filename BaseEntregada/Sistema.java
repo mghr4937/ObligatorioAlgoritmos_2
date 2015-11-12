@@ -10,6 +10,7 @@ import Dominio.*;
 import Dominio.Movil.EstadoMovil;
 import Estructuras.ArbolBinario.ArbolBinarioImpl;
 import Estructuras.ArbolBinario.NodoArbolBinario;
+import Estructuras.Cola.ColaImpl;
 import Estructuras.Grafo.MatrizAdyacencia.GrafoMatrizAdyacencia_impl;
 import Estructuras.Hash.Hash;
 import Estructuras.ListaOrdenada.ListaOrdenada_impl;
@@ -336,7 +337,7 @@ public class Sistema implements ISistema {
 			}
 			
 			//Si no encontre movil disponible en la esquina, voy a buscar en el radio.
-			//movilMasCercano = provider.movilMasCercano(esquina);
+			movilMasCercano = this.getMovilMasCercano(esquina);
 			movilMasCercano.setEstadoMovil(EstadoMovil.ASIGNADO);
 			System.out.println(movilMasCercano.getMatricula() + ";" + metros + ";" + movilMasCercano.getConductor());
 			mensaje_movilMasCercano = movilMasCercano.getMatricula();
@@ -346,6 +347,18 @@ public class Sistema implements ISistema {
 			return new Retorno(Resultado.ERROR_1);
 		}
 	}
+	
+	
+
+	private Movil getMovilMasCercano(Esquina esquina) {
+		int[] distanciaEsquinas = this.caminosMinimos(esquina);
+		
+		
+		
+		return null;
+	}
+
+
 
 	//Precondiciones: Recibimos un juego de coordenadas que forman una esquina y un valor numerico que represente el radio en mts en el que se deben buscar moviles
 	//Postcondiciones: Si existe la esquina y el radio es coherente, nos trae la lista de moviles DISPONIBLES que se encuentran dentro de ese radio
@@ -414,48 +427,42 @@ public class Sistema implements ISistema {
 		return lstRetorno;
 	}
 	
-	public DistanciaEsquina[][] caminosMinimos(Esquina esquina){
-		DistanciaEsquina minimo = new DistanciaEsquina(99999, -1) ;
-		int min = 999999;
-		int esquinaSig = -1;
-		int esquinaActual = esquina.getEsquinaId();
+	public int[] caminosMinimos(Esquina esquina){			
 		GrafoMatrizAdyacencia_impl grafo = new GrafoMatrizAdyacencia_impl(this.listaEsquinas.largo()+1);
-		DistanciaEsquina[][] caminos = new DistanciaEsquina[grafo.getCantNodos()+1][grafo.getCantNodos()+1];// [x]=idCiudad [y]=paso		
 		grafo.MatrizAdyacencia = this.GenerarMatrizAdy();
-		grafo.getNodosUsados()[esquinaActual]=true;
-		for (int numeroDePaso = 1; numeroDePaso < grafo.getCantNodos()+1; numeroDePaso++) {
-			for (int destino = 1; destino < grafo.getCantNodos()+1; destino++) {
-				if (grafo.MatrizAdyacencia[esquinaActual][destino] > 0) {// si hay camino, -1 = no adyacentes
-					if (grafo.getNodosUsados()[destino] != true) {
-						grafo.getNodosUsados()[destino] = true;
-						DistanciaEsquina distanciaEsquina = new DistanciaEsquina();
-						distanciaEsquina.setIdEsquinaAnterior(esquinaActual);
-						if(numeroDePaso == 1){
-							distanciaEsquina.setDistanciaAcumulada(grafo.MatrizAdyacencia[esquinaActual][destino]);
-						}else{
-							distanciaEsquina.setDistanciaAcumulada(minimo.getDistanciaAcumulada()+ grafo.MatrizAdyacencia[esquinaActual][destino]);
-						}
-						DistanciaEsquina aux = caminos[destino][numeroDePaso - 1];
-						if (aux == null	|| aux.getDistanciaAcumulada() > distanciaEsquina.getDistanciaAcumulada()) {//comparo con la distancia del paso anterior al mismo destino
-							caminos[destino][numeroDePaso] = distanciaEsquina;	//si es menor la guardo				
-						} else {
-							caminos[destino][numeroDePaso] = aux; // si es mayor me quedo con la anterior
-						}
-						if (min > caminos[destino][numeroDePaso].getDistanciaAcumulada()) {//me quedo con el de menor distancia de ese paso
-							minimo = new DistanciaEsquina();
-							minimo = caminos[destino][numeroDePaso];
-							min = minimo.getDistanciaAcumulada() ;
-							esquinaSig = destino;
-						}							
-					}					
-				}				
-			}
-			esquinaActual = esquinaSig;		
-			min = 9999999;
-		}	
+		int[] distancia = new int[grafo.getCantNodos()+1];// [x]=idCiudad [y]=paso
+		for(int d = 1; d < distancia.length;d++){
+			distancia[d] = 999999999;
+		}
+		//int distancia[ ] = new int[9999999];//distancia[ i ] distancia de esquina inicial a esquina con ID = i
+		ColaImpl cola = new ColaImpl();
+		int esquinaInicial = esquina.getEsquinaId();
+		cola.enColar(esquinaInicial);
+		distancia[esquinaInicial] =  0;
+		int actual , adyacente , peso;
+		while(!cola.esVacia()){
+			actual = (int)cola.desEncolar().getDato(); //Obtengo de la cola el nodo con menor peso, en un comienzo será el inicial
+			if(grafo.getNodosUsados()[actual]!= true){ //Si la esquina actual ya fue visitada entonces sigo sacando elementos de la cola
+				grafo.getNodosUsados()[actual] = true;
+				for(int destino = 1; destino < grafo.getCantNodos();destino++){//reviso adyacentes
+					if (grafo.MatrizAdyacencia[actual][destino] >= 1) {// si hay camino, -1 = no adyacentes
+							adyacente = destino;
+							peso = grafo.MatrizAdyacencia[actual][destino];
+							if( grafo.getNodosUsados()[adyacente] != true ){//si la esquina adyacente no fue visitada
+				                //this.relajacion(actual , adyacente , peso ); //realizamos el paso de relajacion
+								 if( distancia[ actual ]+ peso < distancia[ adyacente ] ){
+								        distancia[ adyacente ]= distancia[ actual ] + peso;  //relajamos el vertice actualizando la distancia
+								        //previo[ adyacente ] = actual;                         //a su vez actualizamos el vertice previo
+								        cola.enColar(adyacente);; //agregamos adyacente a la cola de prioridad
+								    }
+				            }							
+					}
+				}			
+			}	
 		
-		return caminos;
-	}
+		}
+		return distancia;
+	}	
 	
 	private int[][] GenerarMatrizAdy( ) {
 			
@@ -486,6 +493,8 @@ public class Sistema implements ISistema {
 		}
 		return matriz;
 	}
+	
+	
 	
 	public Esquina getEsquinaById(int id){
 		Esquina esquinaBuscada;
@@ -562,33 +571,21 @@ public class Sistema implements ISistema {
 //		this.grafoMatrizAdy = grafoMatrizAdy;
 //	}
 	
-	public void imprimir(){
-		//provider prov = new provider();
-		Esquina esq = this.getEsquinaById(1);
-		DistanciaEsquina [][] dist= this.caminosMinimos(esq);
-		for(int x = 0 ;x < dist.length-1;x++){
-			for(int y = 0 ;y < dist[0].length-1;y++){
-				if(dist[x][y] !=null){
-					System.out.print(" "+dist[x][y].toString()+" ");
+	public void imprimir(){		
+		Esquina esq = this.getEsquinaById(5);
+		int []dist= this.caminosMinimos(esq);
+		for(int x = 0 ;x < dist.length-1;x++){			
+				if(dist[x] > 0){
+					System.out.print(" "+dist[x]+" ");
 				}else{
 					System.out.print(" #-# ");
 				}
 			}
 			System.out.println(" ");
-		}
+		
 	}
 	
-	public void imprimir2(){
-		//provider prov = new provider();
-		//Esquina esq = this.getEsquinaById(1);
-		int [][] dist= this.GenerarMatrizAdy();
-		for(int x = 0 ;x < dist.length;x++){
-			for(int y = 0 ;y < dist[0].length;y++){
-				System.out.print(" ("+dist[x][y]+") ");
-			}
-			System.out.println(" ");
-		}
-	}
+
 	
 	public Movil getMovilByMatricula(String matricula){
 		Movil movilBuscado = new Movil(matricula);
