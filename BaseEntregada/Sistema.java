@@ -4,10 +4,10 @@ import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import BaseEntregada.Retorno.Resultado;
 import Dominio.*;
 import Dominio.Movil.EstadoMovil;
+import Dominio.Comparadores.EntidadRetornable_Movil_Radio_Comparator;
 import Dominio.EntidadesAuxiliares.EntidadRetornable_Movil_Radio;
 import Estructuras.ArbolBinario.ArbolBinarioImpl;
 import Estructuras.ArbolBinario.NodoArbolBinario;
@@ -18,8 +18,7 @@ import Estructuras.ListaOrdenada.ListaOrdenada_impl;
 import Estructuras.ListaOrdenada.Nodo_ListaOrdenada;
 import Estructuras.ListaSimple.ListaSimple_impl;
 import Estructuras.ListaSimple.NodoLista;
-import Providers.DistanciaEsquina;
-import Providers.provider;
+
 
 public class Sistema implements ISistema {
 
@@ -32,7 +31,6 @@ public class Sistema implements ISistema {
 	static String mensaje_movilMasCercano;
 	static String mensaje_movilesEnRadio;
 
-	private provider provider = new provider();
 
 	public Sistema() {
 		this.arbolMoviles = new ArbolBinarioImpl();
@@ -321,50 +319,44 @@ public class Sistema implements ISistema {
 	@Override
 	public Retorno movilMasCercano(Double coordX, Double coordY) {
 		mensaje_movilMasCercano = "";
-		EntidadRetornable_Movil_Radio movilMasCercanoEntidad = new EntidadRetornable_Movil_Radio();
+		EntidadRetornable_Movil_Radio movilMasCercanoEntidad = new EntidadRetornable_Movil_Radio();		
+		if(this.getArbolMoviles().esArbolVacio()){
+			Retorno ret = new Retorno(Resultado.OK);
+			ret.valorString = "";
+			return ret;
 
-		
-		/*if(this.getArbolMoviles().esArbolVacio()){
-			return new Retorno(Resultado.OK);
-
-		}*/
-		
+		}	
 		//El mejor caso posible. Que en la esquina en la que estoy parado, haya un movil disponible.
 		Esquina esquina = (Esquina) this.listaEsquinas.buscar(new Esquina(coordX, coordY));
 		if(esquina != null){
 			if(esquina.getMovil() != null && esquina.getMovil().getEstadoMovil().equals(EstadoMovil.DISPONIBLE)){
 				movilMasCercanoEntidad.setMovil(esquina.getMovil());
 				movilMasCercanoEntidad.getMovil().setEstadoMovil(EstadoMovil.ASIGNADO);
-
 				mensaje_movilMasCercano = movilMasCercanoEntidad.toString();
-				return new Retorno(Resultado.OK);
-			}
-			
+				Retorno ret = new Retorno(Resultado.OK);
+				ret.valorString = mensaje_movilMasCercano;
+				return ret;
+			}			
 			//Si no encontre movil disponible en la esquina, voy a buscar en el radio.
 			movilMasCercanoEntidad = this.getMovilMasCercano(esquina);
 			movilMasCercanoEntidad.getMovil().setEstadoMovil(EstadoMovil.ASIGNADO);
-
 			mensaje_movilMasCercano = movilMasCercanoEntidad.toString();
-			return new Retorno(Resultado.OK);
+			Retorno ret = new Retorno(Resultado.OK);
+			ret.valorString = mensaje_movilMasCercano;
+			return ret;
 		}else{
 			System.out.println("Error 1 - No existe esquina en el sistema");
-			return new Retorno(Resultado.ERROR_1);
+			Retorno ret = new Retorno(Resultado.ERROR_1);
+			ret.valorString = "";
+			return ret;
 		}
 	}
 	
-
-
 	private EntidadRetornable_Movil_Radio getMovilMasCercano(Esquina esquina) {
 		int[] distanciaEsquinas = this.caminosMinimos(esquina);
-
-
-
-
-
 		int idMasCercano = posicionDelMinimoElemento(distanciaEsquinas, 1, distanciaEsquinas.length-1);
 		EntidadRetornable_Movil_Radio aRetornar = new EntidadRetornable_Movil_Radio();
 		boolean encontre = false;
-
 		while (encontre == false) {
 			Esquina esquinaEvaluar = getEsquinaById(idMasCercano);
 			if (esquinaEvaluar != null) {
@@ -381,7 +373,6 @@ public class Sistema implements ISistema {
 	}
 	
 	 public static int posicionDelMinimoElemento(int v[], int desde, int hasta) {
-
 	        if (desde == hasta) {
 	            return desde;
 	        } else {
@@ -397,13 +388,17 @@ public class Sistema implements ISistema {
 	//Postcondiciones: Si existe la esquina y el radio es coherente, nos trae la lista de moviles DISPONIBLES que se encuentran dentro de ese radio
 	@Override
 	public Retorno verMovilesEnRadio(Double coordX, Double coordY, int radio) {
-		if(radio <= 0){
-			return new Retorno(Resultado.ERROR_1);
-		}
 		mensaje_movilesEnRadio = "";
-		if(this.getArbolMoviles().esArbolVacio()){
-			return new Retorno(Resultado.OK);
-		}
+		Retorno ret = new Retorno ();		
+		if(radio <= 0){
+			ret.resultado = Resultado.ERROR_1;
+			ret.valorString = mensaje_movilesEnRadio;
+			return ret;
+		}else if(this.getArbolMoviles().esArbolVacio()){
+			ret.resultado = Resultado.OK;
+			ret.valorString = mensaje_movilesEnRadio;
+			return ret;
+		}		
 		Esquina esquina = (Esquina)this.listaEsquinas.buscar(new Esquina(coordX, coordY));
 		if(esquina != null){
 			ListaOrdenada_impl lstMovilesEnRadio = this.obtenerMovilesEnRadio(radio, esquina);
@@ -416,23 +411,31 @@ public class Sistema implements ISistema {
 					aux = aux.getSiguiente();
 				}
 			}
-		}else{
-			return new Retorno(Resultado.ERROR_2);
-		}	
-		return new Retorno(Resultado.OK);
+			ret.resultado = Resultado.OK;
+			ret.valorString = mensaje_movilesEnRadio;
+			return ret;
+		} else {
+			ret.resultado = Resultado.ERROR_2;
+			ret.valorString = mensaje_movilesEnRadio;
+			return ret;
+		}
 	}
 	
 	public ListaOrdenada_impl obtenerMovilesEnRadio(int radio, Esquina esquina) {
-		ListaOrdenada_impl lstRetorno = new ListaOrdenada_impl();
+		ListaOrdenada_impl lstRetorno = new ListaOrdenada_impl(new EntidadRetornable_Movil_Radio_Comparator());
 		// Aca recorro con Dijkstra y voy creando y guardando entidades EntidadRetornable_Movil_Radio (inserto ordenado)
 		int distancia [] = this.caminosMinimos(esquina);
 		for (int x = 1; x <= distancia.length-1; x++) {
 			Esquina esq = this.getEsquinaById(x);
-			Movil movil = esquina.getMovil();
-			if(movil != null){
-				EntidadRetornable_Movil_Radio aux = new EntidadRetornable_Movil_Radio(movil, distancia[x]);
-				lstRetorno.insertarOrdenado(aux);
-			}
+			if(esq != null){
+				Movil movil = esq.getMovil();
+				if(movil != null){
+					if(distancia[x]<=radio){
+						EntidadRetornable_Movil_Radio aux = new EntidadRetornable_Movil_Radio(movil, distancia[x]);
+						lstRetorno.insertarOrdenado(aux);
+					}					
+				}
+			}			
 		}		
 		return lstRetorno;
 	}
@@ -515,7 +518,7 @@ public class Sistema implements ISistema {
 	
 	private int[][] GenerarMatrizAdy( ) {
 			
-		int largo = this.listaEsquinas.largo()+1;
+		int largo = this.iCantEsquinas+1;
 		int x = 1;
 			
 		int[][] matriz = new int[largo][largo];
@@ -542,7 +545,6 @@ public class Sistema implements ISistema {
 		}
 		return matriz;
 	}
-	
 	
 	
 	public Esquina getEsquinaById(int id){
@@ -601,22 +603,6 @@ public class Sistema implements ISistema {
 		this.puntosGrafo = puntosGrafo;
 	}
 
-	public provider getProvider() {
-		return provider;
-	}
-
-	public void setProvider(provider provider) {
-		this.provider = provider;
-	}
-
-//	public GrafoMatrizAdyacencia_impl getGrafoMatrizAdy() {
-//		return grafoMatrizAdy;
-//	}
-//
-//	public void setGrafoMatrizAdy(GrafoMatrizAdyacencia_impl grafoMatrizAdy) {
-//		this.grafoMatrizAdy = grafoMatrizAdy;
-//	}
-	
 	public void imprimir(){		
 		Esquina esq = this.getEsquinaById(5);
 		int []dist= this.caminosMinimos(esq);
@@ -630,8 +616,6 @@ public class Sistema implements ISistema {
 			System.out.println(" ");
 		
 	}
-	
-
 	
 	public Movil getMovilByMatricula(String matricula){
 		Movil movilBuscado = new Movil(matricula);

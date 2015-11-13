@@ -396,7 +396,7 @@ public class TestsSistemaV2 {
 		assertEquals(Retorno.Resultado.OK,
 				sistema.registrarTramo(-34.910913, -56.195370, -34.910886, -56.194254, 10).resultado);// P7-P8
 		assertEquals(Retorno.Resultado.OK,
-				sistema.registrarTramo(-34.909910, -56.194372, -34.910886, -56.194254, 3).resultado);// P5-P8
+				sistema.registrarTramo(-34.909910, -56.194372, -34.910886, -56.194254, 2).resultado);// P5-P8
 		assertEquals(Retorno.Resultado.OK,
 				sistema.registrarTramo(-34.910728, -56.193116, -34.910886, -56.194254, 10).resultado);// P9-P8
 
@@ -409,11 +409,12 @@ public class TestsSistemaV2 {
 		assertEquals(Retorno.Resultado.OK, sistema.asignarUbicacionMovil("IAA2211", -34.910728, -56.193116).resultado);// P9
 
 		// Moviles en radio 22 desde P3: P9 y P8, en ese orden
-		String movilEsperado = "IAA2211;15;Ana|SAA1234;22;Omar";
+		String movilEsperado = "IAA2211;15;Ana|SAA1234;22;Omar|";
 		Retorno res = sistema.verMovilesEnRadio(-34.908880, -56.193299, 22); // desde
 																				// P3
 		assertEquals(Retorno.Resultado.OK, res.resultado);
 		assertEquals(movilEsperado, res.valorString.replace(" ", ""));
+		System.out.println(" ");
 	}
 
 	@Test
@@ -465,7 +466,7 @@ public class TestsSistemaV2 {
 		assertEquals(Retorno.Resultado.OK, sistema.asignarUbicacionMovil("AAB4561", -34.909813, -56.193202).resultado);// P6
 
 		// Movil mas cercano desde P3: P3-P6 costo 3
-		String movilEsperado = "AAB4561;3;Juan";
+		String movilEsperado = "AAB4561;3;Juan|";
 		Retorno res = sistema.movilMasCercano(-34.908880, -56.193299); // desde
 																		// P3
 		assertEquals(Retorno.Resultado.OK, res.resultado);
@@ -521,7 +522,7 @@ public class TestsSistemaV2 {
 		assertEquals(Retorno.Resultado.OK, sistema.asignarUbicacionMovil("AAB4561", -34.910913, -56.195370).resultado);// P7
 
 		// Movil mas cercano desde P3: P3-P2-P1-P4-P5-P8 costo 22
-		String movilEsperado = "SAA1234;22;Omar";
+		String movilEsperado = "SAA1234;23;Omar|";
 		Retorno res = sistema.movilMasCercano(-34.908880, -56.193299); // P3
 		assertEquals(Retorno.Resultado.OK, res.resultado);
 		assertEquals(movilEsperado, res.valorString.replace(" ", ""));
@@ -578,7 +579,7 @@ public class TestsSistemaV2 {
 		assertEquals(Retorno.Resultado.OK, sistema.deshabilitarMovil("SAA1234").resultado);
 
 		// Movil mas cercano desde P3: P3-P2-P1-P4-P7 costo 23
-		String movilEsperado = "AAB4561;23;Juan";
+		String movilEsperado = "AAB4561;23;Juan|";
 		Retorno res = sistema.movilMasCercano(-34.908880, -56.193299); // saliendo
 																		// desde
 																		// P3
@@ -598,11 +599,14 @@ public class TestsSistemaV2 {
 				sistema.registrarTramo(-34.908951, -56.194500, -34.908880, -56.193299, 7).resultado);
 		assertEquals(Retorno.Resultado.OK,
 				sistema.registrarTramo(-34.908951, -56.194500, -34.910913, -56.195370, 7).resultado);
-		// No existe esquina
-		assertEquals(Retorno.Resultado.ERROR_1, sistema.movilMasCercano(-34.000000, -56.000000).resultado);
+		
 		// No tengo moviles disponibles, debo retornar el string vacio
-		Retorno res = sistema.movilMasCercano(-34.908951, -56.194500);
-		assertEquals(Retorno.Resultado.OK, res.resultado);
+		assertEquals(Retorno.Resultado.OK, sistema.movilMasCercano(-34.908951, -56.194500).resultado);
+		// No existe esquina
+		assertEquals(Retorno.Resultado.OK, sistema.registrarMovil("SAA1234", "Omar").resultado);
+		assertEquals(Retorno.Resultado.OK, sistema.asignarUbicacionMovil("SAA1234", -34.908951, -56.194500).resultado);// P8
+		Retorno res = sistema.movilMasCercano(-34.000000, -56.000000);
+		assertEquals(Retorno.Resultado.ERROR_1, res.resultado);
 		assertEquals("", res.valorString.replace(" ", ""));
 	}
 
