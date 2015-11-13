@@ -8,12 +8,14 @@ import java.net.URISyntaxException;
 import BaseEntregada.Retorno.Resultado;
 import Dominio.*;
 import Dominio.Movil.EstadoMovil;
+import Dominio.EntidadesAuxiliares.EntidadRetornable_Movil_Radio;
 import Estructuras.ArbolBinario.ArbolBinarioImpl;
 import Estructuras.ArbolBinario.NodoArbolBinario;
 import Estructuras.Cola.ColaImpl;
 import Estructuras.Grafo.MatrizAdyacencia.GrafoMatrizAdyacencia_impl;
 import Estructuras.Hash.Hash;
 import Estructuras.ListaOrdenada.ListaOrdenada_impl;
+import Estructuras.ListaOrdenada.Nodo_ListaOrdenada;
 import Estructuras.ListaSimple.ListaSimple_impl;
 import Estructuras.ListaSimple.NodoLista;
 import Providers.DistanciaEsquina;
@@ -43,6 +45,7 @@ public class Sistema implements ISistema {
 	//Postcondiciones: Crea el sistema con una cantidad limite de esquinas igual a cantPuntos.
 	@Override
 	public Retorno inicializarSistema(int cantPuntos) {
+		Esquina.setNumeradora(0);
 		if (cantPuntos <= 0) {
 			System.out.println("No hay esquinas en el mapa");
 			return new Retorno(Resultado.ERROR_1);
@@ -364,23 +367,44 @@ public class Sistema implements ISistema {
 	//Postcondiciones: Si existe la esquina y el radio es coherente, nos trae la lista de moviles DISPONIBLES que se encuentran dentro de ese radio
 	@Override
 	public Retorno verMovilesEnRadio(Double coordX, Double coordY, int radio) {
-//		mensaje_movilesEnRadio = "";
-//		if(this.getArbolMoviles().esArbolVacio())
-//			return new Retorno(Resultado.OK);
-//		
-//		//ListaOrdenada_impl lstMovilesEnRadio = provider.obtenerMovilesEnRadio(radio);
-//		
-//		if(lstMovilesEnRadio != null && !lstMovilesEnRadio.esVacia()){
-//			Nodo_ListaOrdenada aux = (Nodo_ListaOrdenada) lstMovilesEnRadio.ObtenerElementoPrimero();
-//			while(aux != null){
-//				EntidadRetornable_Movil_Radio movilRadio = new EntidadRetornable_Movil_Radio();
-//				movilRadio = (EntidadRetornable_Movil_Radio) aux.getDato();
-//				mensaje_movilesEnRadio += movilRadio.toString();
-//				aux = aux.getSiguiente();
-//			}
-//		}
-//		System.out.println(mensaje_movilesEnRadio);
+		if(radio <= 0){
+			return new Retorno(Resultado.ERROR_1);
+		}
+		mensaje_movilesEnRadio = "";
+		if(this.getArbolMoviles().esArbolVacio()){
+			return new Retorno(Resultado.OK);
+		}
+		Esquina esquina = (Esquina)this.listaEsquinas.buscar(new Esquina(coordX, coordY));
+		if(esquina != null){
+			ListaOrdenada_impl lstMovilesEnRadio = this.obtenerMovilesEnRadio(radio, esquina);
+			if(lstMovilesEnRadio != null && !lstMovilesEnRadio.esVacia()){
+			Nodo_ListaOrdenada aux = (Nodo_ListaOrdenada) lstMovilesEnRadio.ObtenerElementoPrimero();
+				while (aux != null) {
+					EntidadRetornable_Movil_Radio movilRadio = new EntidadRetornable_Movil_Radio();
+					movilRadio = (EntidadRetornable_Movil_Radio) aux.getDato();
+					mensaje_movilesEnRadio += movilRadio.toString();
+					aux = aux.getSiguiente();
+				}
+			}
+		}else{
+			return new Retorno(Resultado.ERROR_2);
+		}	
 		return new Retorno(Resultado.OK);
+	}
+	
+	public ListaOrdenada_impl obtenerMovilesEnRadio(int radio, Esquina esquina) {
+		ListaOrdenada_impl lstRetorno = new ListaOrdenada_impl();
+		// Aca recorro con Dijkstra y voy creando y guardando entidades EntidadRetornable_Movil_Radio (inserto ordenado)
+		int distancia [] = this.caminosMinimos(esquina);
+		for (int x = 1; x <= distancia.length-1; x++) {
+			Esquina esq = this.getEsquinaById(x);
+			Movil movil = esquina.getMovil();
+			if(movil != null){
+				EntidadRetornable_Movil_Radio aux = new EntidadRetornable_Movil_Radio(movil, distancia[x]);
+				lstRetorno.insertarOrdenado(aux);
+			}
+		}		
+		return lstRetorno;
 	}
 
 	//Precondiciones: No se encuentran precondiciones
@@ -420,17 +444,12 @@ public class Sistema implements ISistema {
 		return retorno;
 	}
 	
-	public ListaOrdenada_impl obtenerMovilesEnRadio(int radio) {
-		ListaOrdenada_impl lstRetorno = new ListaOrdenada_impl();
-		// Aca recorro con Dijkstra y voy creando y guardando entidades EntidadRetornable_Movil_Radio (inserto ordenado)
-		
-		return lstRetorno;
-	}
+
 	
 	public int[] caminosMinimos(Esquina esquina){			
-		GrafoMatrizAdyacencia_impl grafo = new GrafoMatrizAdyacencia_impl(this.listaEsquinas.largo()+1);
+		GrafoMatrizAdyacencia_impl grafo = new GrafoMatrizAdyacencia_impl(this.iCantEsquinas);
 		grafo.MatrizAdyacencia = this.GenerarMatrizAdy();
-		int[] distancia = new int[grafo.getCantNodos()+1];// [x]=idCiudad [y]=paso
+		int[] distancia = new int[this.iCantEsquinas+1];// [x]=idCiudad [y]=paso
 		for(int d = 1; d < distancia.length;d++){
 			distancia[d] = 999999999;
 		}
@@ -498,15 +517,12 @@ public class Sistema implements ISistema {
 	
 	public Esquina getEsquinaById(int id){
 		Esquina esquinaBuscada;
-
 		if (this.getListaEsquinas().esVacia())
 			return null;
 		else {
 			NodoLista aux = (NodoLista) this.getListaEsquinas().ObtenerElementoPrimero();
-
 			while (aux != null) {
 				esquinaBuscada = (Esquina) aux.getDato();
-
 				if (esquinaBuscada.getEsquinaId() == id)
 					return esquinaBuscada;
 				else
