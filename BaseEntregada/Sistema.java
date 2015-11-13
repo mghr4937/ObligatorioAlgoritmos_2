@@ -316,34 +316,35 @@ public class Sistema implements ISistema {
 		}
 	}
 	
-	//Precondiciones: Recibimos un juego de coordenadas que forman una esquina
+//Precondiciones: Recibimos un juego de coordenadas que forman una esquina
 	//Postcondiciones: Si existe la esquina, busca el movil mas cercano respecto a las coordenadas pasadas por paramero, que este DISPONIBLE
 	@Override
 	public Retorno movilMasCercano(Double coordX, Double coordY) {
 		mensaje_movilMasCercano = "";
-		Movil movilMasCercano = new Movil();
-		int metros = -1;
+		EntidadRetornable_Movil_Radio movilMasCercanoEntidad = new EntidadRetornable_Movil_Radio();
+
 		
-		if(this.getArbolMoviles().esArbolVacio()){
+		/*if(this.getArbolMoviles().esArbolVacio()){
 			return new Retorno(Resultado.OK);
-		}
+
+		}*/
 		
 		//El mejor caso posible. Que en la esquina en la que estoy parado, haya un movil disponible.
 		Esquina esquina = (Esquina) this.listaEsquinas.buscar(new Esquina(coordX, coordY));
 		if(esquina != null){
 			if(esquina.getMovil() != null && esquina.getMovil().getEstadoMovil().equals(EstadoMovil.DISPONIBLE)){
-				movilMasCercano = esquina.getMovil();
-				movilMasCercano.setEstadoMovil(EstadoMovil.ASIGNADO);
-				System.out.println(movilMasCercano.getMatricula() + ";" + metros + ";" + movilMasCercano.getConductor());
-				mensaje_movilMasCercano = movilMasCercano.getMatricula();
+				movilMasCercanoEntidad.setMovil(esquina.getMovil());
+				movilMasCercanoEntidad.getMovil().setEstadoMovil(EstadoMovil.ASIGNADO);
+
+				mensaje_movilMasCercano = movilMasCercanoEntidad.toString();
 				return new Retorno(Resultado.OK);
 			}
 			
 			//Si no encontre movil disponible en la esquina, voy a buscar en el radio.
-			movilMasCercano = this.getMovilMasCercano(esquina);
-			movilMasCercano.setEstadoMovil(EstadoMovil.ASIGNADO);
-			System.out.println(movilMasCercano.getMatricula() + ";" + metros + ";" + movilMasCercano.getConductor());
-			mensaje_movilMasCercano = movilMasCercano.getMatricula();
+			movilMasCercanoEntidad = this.getMovilMasCercano(esquina);
+			movilMasCercanoEntidad.getMovil().setEstadoMovil(EstadoMovil.ASIGNADO);
+
+			mensaje_movilMasCercano = movilMasCercanoEntidad.toString();
 			return new Retorno(Resultado.OK);
 		}else{
 			System.out.println("Error 1 - No existe esquina en el sistema");
@@ -351,17 +352,46 @@ public class Sistema implements ISistema {
 		}
 	}
 	
-	
 
-	private Movil getMovilMasCercano(Esquina esquina) {
+
+	private EntidadRetornable_Movil_Radio getMovilMasCercano(Esquina esquina) {
 		int[] distanciaEsquinas = this.caminosMinimos(esquina);
-		
-		
-		
-		return null;
+
+
+
+
+
+		int idMasCercano = posicionDelMinimoElemento(distanciaEsquinas, 1, distanciaEsquinas.length-1);
+		EntidadRetornable_Movil_Radio aRetornar = new EntidadRetornable_Movil_Radio();
+		boolean encontre = false;
+
+		while (encontre == false) {
+			Esquina esquinaEvaluar = getEsquinaById(idMasCercano);
+			if (esquinaEvaluar != null) {
+				if (esquinaEvaluar.getMovil() != null && esquinaEvaluar.getMovil().getEstadoMovil().equals(EstadoMovil.DISPONIBLE)) {
+					aRetornar.setMovil(esquinaEvaluar.getMovil());
+					aRetornar.setMetros(distanciaEsquinas[idMasCercano]);
+					encontre = true;
+				}
+				distanciaEsquinas[idMasCercano] = 0;
+				idMasCercano = posicionDelMinimoElemento(distanciaEsquinas, 1, distanciaEsquinas.length-1);
+			}
+		}
+		return aRetornar;
 	}
+	
+	 public static int posicionDelMinimoElemento(int v[], int desde, int hasta) {
 
-
+	        if (desde == hasta) {
+	            return desde;
+	        } else {
+	            int minimo = posicionDelMinimoElemento(v, desde + 1, hasta);
+	            if (v[desde] < v[minimo] && v[desde] > 0) {
+	            	minimo = desde;
+	            }
+	            return minimo;
+	        }
+	    }
 
 	//Precondiciones: Recibimos un juego de coordenadas que forman una esquina y un valor numerico que represente el radio en mts en el que se deben buscar moviles
 	//Postcondiciones: Si existe la esquina y el radio es coherente, nos trae la lista de moviles DISPONIBLES que se encuentran dentro de ese radio
