@@ -519,7 +519,7 @@ public class TestsSistema {
 		assertEquals(retornoRegistrarEsquinaDos.resultado, Retorno.Resultado.OK);
 		Retorno retornoRegistrarTramoUno = sistema.registrarTramo(1.555, 1.222, 1.51, 1.21, 10);
 		assertEquals(retornoRegistrarTramoUno.resultado, Retorno.Resultado.OK);
-		assertEquals(1,sistema.getListaTramos().largo());
+		assertEquals(2,sistema.getListaTramos().largo());
 		Retorno eliminarTramo = sistema.eliminarTramo(1.555, 1.222, 1.51, 1.21);
 		assertEquals(eliminarTramo.resultado, Retorno.Resultado.OK);
 		assertEquals(0,sistema.getListaTramos().largo());
@@ -535,10 +535,10 @@ public class TestsSistema {
 		assertEquals(retornoRegistrarEsquinaDos.resultado, Retorno.Resultado.OK);
 		Retorno retornoRegistrarTramoUno = sistema.registrarTramo(1.555, 1.222, 1.51, 1.21, 10);
 		assertEquals(retornoRegistrarTramoUno.resultado, Retorno.Resultado.OK);
-		assertEquals(1,sistema.getListaTramos().largo());
+		assertEquals(2,sistema.getListaTramos().largo());
 		Retorno eliminarTramo = sistema.eliminarTramo(1.555, 1.222, 1.51, 1.999);
 		assertEquals(eliminarTramo.resultado, Retorno.Resultado.ERROR_1);
-		assertEquals(1,sistema.getListaTramos().largo());
+		assertEquals(2,sistema.getListaTramos().largo());
 	}
 	
 	@Test
@@ -649,7 +649,7 @@ public class TestsSistema {
 				
 		//Compruebo que ademas de devolverme el Retorno que esperaba, 
 		//EL MOVIL QUE ME DEVOLVIO ES EL QUE YO SE QUE ESTA MAS CERCA. Y NO OTRO.
-		assertEquals("ABC1234;0;46110887", Sistema.mensaje_movilMasCercano);
+		assertEquals("ABC1234;0;46110887 | ", Sistema.mensaje_movilMasCercano);
 	}
 	
 	@Test
@@ -710,7 +710,7 @@ public class TestsSistema {
 						
 		//Compruebo que ademas de devolverme el Retorno que esperaba, 
 		//EL MOVIL QUE ME DEVOLVIO ES EL QUE YO SE QUE ESTA MAS CERCA. Y NO OTRO.
-		assertEquals("ABC1234;1;46110887", Sistema.mensaje_movilMasCercano);
+		assertEquals("ABC1234;1;46110887 | ", Sistema.mensaje_movilMasCercano);
 	}
 	
 	@Test
@@ -763,7 +763,7 @@ public class TestsSistema {
 								
 		//Compruebo que ademas de devolverme el Retorno que esperaba, 
 		//EL MOVIL QUE ME DEVOLVIO ES EL QUE YO SE QUE ESTA MAS CERCA. Y NO OTRO.
-		assertEquals("ABC1234;6;46110887", Sistema.mensaje_movilMasCercano);
+		assertEquals("ABC1234;6;46110887 | ", Sistema.mensaje_movilMasCercano);
 	}
 	
 	@Test
@@ -807,7 +807,7 @@ public class TestsSistema {
 		assertEquals(retornoMovilUno.resultado, Retorno.Resultado.OK);
 				
 		//Lo asigno a la esquina C
-		Retorno retornoAsignacionUno = sistema.asignarUbicacionMovil("ABC1234", 1.51, 1.21);
+		Retorno retornoAsignacionUno = sistema.asignarUbicacionMovil("ABC1234", 1.52, 1.221);
 		assertEquals(retornoAsignacionUno.resultado, Retorno.Resultado.OK);
 		
 		//Registro movil dos
@@ -815,7 +815,7 @@ public class TestsSistema {
 		assertEquals(retornoMovilDos.resultado, Retorno.Resultado.OK);
 						
 		//Lo asigno a la esquina D
-		Retorno retornoAsignacionDos = sistema.asignarUbicacionMovil("BCD2345", 1.54, 1.25);
+		Retorno retornoAsignacionDos = sistema.asignarUbicacionMovil("BCD2345", 1.53, 1.24);
 		assertEquals(retornoAsignacionDos.resultado, Retorno.Resultado.OK);
 				
 		//Busco el movil mas cercano a la esquina uno
@@ -826,7 +826,7 @@ public class TestsSistema {
 		//EL MOVIL QUE ME DEVOLVIO ES EL QUE YO SE QUE ESTA MAS CERCA. Y NO OTRO.
 		//EN ESTA PRUEBA, LOS DOS MOVILES ESTAN A LA MISMA DISTANCIA.
 		//LA RESOLUCION DE CUAL DEVUELVE, PODRIA SER POR UN SEGUNDO CRITERIO (MENOR CANTIDAD DE PASOS POR EJ)
-		assertEquals("ABC1234;3;46110887", Sistema.mensaje_movilMasCercano);
+		assertEquals("BCD2345;3;43553319 | ", Sistema.mensaje_movilMasCercano);
 	}
 	
 	@Test
@@ -961,7 +961,7 @@ public class TestsSistema {
 		//Compruebo que ademas de devolverme el Retorno que esperaba, 
 		//EL MOVIL QUE ME DEVOLVIO ES EL QUE YO SE QUE ESTA MAS CERCA. Y NO OTRO.
 		//EN ESTA PRUEBA, EL MOVIL ABC1234 ESTA MAS CERCA, PERO DESHABILITADO. ASI QUE ME TIENE QUE DEVOLVER EL OTRO
-		assertEquals("BCD2345;6;43553319", Sistema.mensaje_movilMasCercano);
+		assertEquals("BCD2345;6;43553319 | ", Sistema.mensaje_movilMasCercano);
 	}
 	
 	@Test
@@ -1027,9 +1027,9 @@ public class TestsSistema {
 		//Compruebo que ademas de devolverme el Retorno que esperaba, 
 		//EL MOVIL QUE ME DEVOLVIO ES EL QUE YO SE QUE ESTA MAS CERCA. Y NO OTRO.
 		//EN ESTA PRUEBA, EL MOVIL ABC1234 ESTA MAS CERCA, PERO DESHABILITADO. ASI QUE ME TIENE QUE DEVOLVER EL OTRO
-		assertEquals("BCD2345;6;43553319", Sistema.mensaje_movilMasCercano);
+		assertEquals("BCD2345;6;43553319 | ", Sistema.mensaje_movilMasCercano);
 	}
-
+	
 	@Test
 	public void movilEnRadio_radioMenorQueCero() {
 		//Creo el sistema
@@ -1299,7 +1299,7 @@ public class TestsSistema {
 		
 		//Compruebo que ademas de devolverme el Retorno que esperaba, 
 		//EL/LOS MOVILES QUE ME DEVOLVIO, SON LOS QUE YO SE QUE CORRESPONDEN. NI UNO MAS NI UNO MENOS.
-		assertEquals("ABC1234;1;46110887", Sistema.mensaje_movilesEnRadio);
+		assertEquals("ABC1234;1;46110887 | ", Sistema.mensaje_movilesEnRadio);
 	}
 
 	@Test
@@ -1350,7 +1350,7 @@ public class TestsSistema {
 		Retorno retornoMovilDos = sistema.registrarMovil("BCD2345", "43553319");
 		assertEquals(retornoMovilDos.resultado, Retorno.Resultado.OK);
 														
-		//Lo asigno a la esquina D
+		//Lo asigno a la esquina E
 		Retorno retornoAsignacionDos = sistema.asignarUbicacionMovil("BCD2345", 1.54, 1.25);
 		assertEquals(retornoAsignacionDos.resultado, Retorno.Resultado.OK);
 						
@@ -1360,6 +1360,7 @@ public class TestsSistema {
 				
 		//Compruebo que ademas de devolverme el Retorno que esperaba, 
 		//EL/LOS MOVILES QUE ME DEVOLVIO, SON LOS QUE YO SE QUE CORRESPONDEN. NI UNO MAS NI UNO MENOS.
-		assertEquals("ABC1234;1;46110887 | BCD2345;6;43553319 |", Sistema.mensaje_movilesEnRadio);
+		assertEquals("ABC1234;1;46110887 | BCD2345;6;43553319 | ", Sistema.mensaje_movilesEnRadio);
 	}
+	
 }

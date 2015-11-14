@@ -300,9 +300,11 @@ public class Sistema implements ISistema {
 		Esquina inicio = (Esquina) this.listaEsquinas.buscar(new Esquina(coordXi, coordYi));
 		Esquina fin = (Esquina) this.listaEsquinas.buscar(new Esquina(coordXf, coordYf));
 		if(inicio != null && fin != null){
-			Tramo tramo = (Tramo) this.listaTramos.buscar(new Tramo(inicio, fin, 0));
-			if(tramo != null){
-				this.listaTramos.borrarElemento(tramo);
+			Tramo tramoUno = (Tramo) this.listaTramos.buscar(new Tramo(inicio, fin, 0));
+			Tramo tramoDos = (Tramo) this.listaTramos.buscar(new Tramo(fin, inicio, 0));
+			if(tramoUno != null){
+				this.listaTramos.borrarElemento(tramoUno);
+				this.listaTramos.borrarElemento(tramoDos);
 				return new Retorno(Resultado.OK);
 			}else{
 				System.out.println("Error 2 - No existe Tramo en el sistema");
@@ -320,12 +322,19 @@ public class Sistema implements ISistema {
 	public Retorno movilMasCercano(Double coordX, Double coordY) {
 		mensaje_movilMasCercano = "";
 		EntidadRetornable_Movil_Radio movilMasCercanoEntidad = new EntidadRetornable_Movil_Radio();		
+		
+		if(this.listaEsquinas.esVacia()){
+			System.out.println("Error 1 - No existe esquina en el sistema");
+			Retorno ret = new Retorno(Resultado.ERROR_1);
+			ret.valorString = "";
+			return ret;
+		}
 		if(this.getArbolMoviles().esArbolVacio()){
 			Retorno ret = new Retorno(Resultado.OK);
 			ret.valorString = "";
 			return ret;
-
-		}	
+		}
+		
 		//El mejor caso posible. Que en la esquina en la que estoy parado, haya un movil disponible.
 		Esquina esquina = (Esquina) this.listaEsquinas.buscar(new Esquina(coordX, coordY));
 		if(esquina != null){
@@ -339,17 +348,15 @@ public class Sistema implements ISistema {
 			}			
 			//Si no encontre movil disponible en la esquina, voy a buscar en el radio.
 			movilMasCercanoEntidad = this.getMovilMasCercano(esquina);
-			movilMasCercanoEntidad.getMovil().setEstadoMovil(EstadoMovil.ASIGNADO);
-			mensaje_movilMasCercano = movilMasCercanoEntidad.toString();
+			if(movilMasCercanoEntidad.getMovil() != null){
+				movilMasCercanoEntidad.getMovil().setEstadoMovil(EstadoMovil.ASIGNADO);
+				mensaje_movilMasCercano = movilMasCercanoEntidad.toString();
+			}
 			Retorno ret = new Retorno(Resultado.OK);
 			ret.valorString = mensaje_movilMasCercano;
 			return ret;
-		}else{
-			System.out.println("Error 1 - No existe esquina en el sistema");
-			Retorno ret = new Retorno(Resultado.ERROR_1);
-			ret.valorString = "";
-			return ret;
 		}
+		return new Retorno(Resultado.OK);
 	}
 	
 	private EntidadRetornable_Movil_Radio getMovilMasCercano(Esquina esquina) {
@@ -357,7 +364,8 @@ public class Sistema implements ISistema {
 		int idMasCercano = posicionDelMinimoElemento(distanciaEsquinas, 1, distanciaEsquinas.length-1);
 		EntidadRetornable_Movil_Radio aRetornar = new EntidadRetornable_Movil_Radio();
 		boolean encontre = false;
-		while (encontre == false) {
+		while (encontre == false & idMasCercano <= distanciaEsquinas.length) {
+			System.out.println("esta en loop?");
 			Esquina esquinaEvaluar = getEsquinaById(idMasCercano);
 			if (esquinaEvaluar != null) {
 				if (esquinaEvaluar.getMovil() != null && esquinaEvaluar.getMovil().getEstadoMovil().equals(EstadoMovil.DISPONIBLE)) {
@@ -367,6 +375,8 @@ public class Sistema implements ISistema {
 				}
 				distanciaEsquinas[idMasCercano] = 0;
 				idMasCercano = posicionDelMinimoElemento(distanciaEsquinas, 1, distanciaEsquinas.length-1);
+				if(distanciaEsquinas[idMasCercano] == 999999999 || distanciaEsquinas[idMasCercano] == 0)
+					encontre =true;
 			}
 		}
 		return aRetornar;
@@ -394,20 +404,22 @@ public class Sistema implements ISistema {
 			ret.resultado = Resultado.ERROR_1;
 			ret.valorString = mensaje_movilesEnRadio;
 			return ret;
-		}else if(this.getArbolMoviles().esArbolVacio()){
-			ret.resultado = Resultado.OK;
-			ret.valorString = mensaje_movilesEnRadio;
-			return ret;
-		}		
+		}	
 		Esquina esquina = (Esquina)this.listaEsquinas.buscar(new Esquina(coordX, coordY));
 		if(esquina != null){
+			
+			if(this.getArbolMoviles().esArbolVacio()){
+				ret.resultado = Resultado.OK;
+				ret.valorString = mensaje_movilesEnRadio;
+				return ret;
+			}
 			ListaOrdenada_impl lstMovilesEnRadio = this.obtenerMovilesEnRadio(radio, esquina);
 			if(lstMovilesEnRadio != null && !lstMovilesEnRadio.esVacia()){
 			Nodo_ListaOrdenada aux = (Nodo_ListaOrdenada) lstMovilesEnRadio.ObtenerElementoPrimero();
 				while (aux != null) {
 					EntidadRetornable_Movil_Radio movilRadio = new EntidadRetornable_Movil_Radio();
 					movilRadio = (EntidadRetornable_Movil_Radio) aux.getDato();
-					mensaje_movilesEnRadio += movilRadio.toString();
+					mensaje_movilesEnRadio = mensaje_movilesEnRadio.concat(movilRadio.toString());
 					aux = aux.getSiguiente();
 				}
 			}
